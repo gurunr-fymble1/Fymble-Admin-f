@@ -1,0 +1,6 @@
+{
+    "powerquery.client.additionalSymbolsDirectories": [
+        "/Users/admin/Desktop/fittbot_client_new_ui/admin-01-05/.vscode/excel-pq-symbols",
+        "/Users/admin/Desktop/fittbot_client_new_ui/admin-01-05/frontend/.vscode/excel-pq-symbols"
+    ]
+}
