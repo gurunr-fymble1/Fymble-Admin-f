@@ -14,7 +14,7 @@ export default function AllPurchases() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     total: 0,
-    limit: 10,
+    limit: 20,
     totalPages: 0,
     hasNext: false,
     hasPrev: false,
@@ -65,7 +65,7 @@ export default function AllPurchases() {
 
       const params = {
         page: pageNum,
-        limit: 10,
+        limit: 20,
       };
 
       if (searchQuery) params.search = searchQuery;

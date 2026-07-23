@@ -25,6 +25,13 @@ export default function FinancialsDashboard() {
   // Pie chart interaction states
   const [hoveredSegment, setHoveredSegment] = useState(null);
   const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, data: null });
+  const [showOtherBreakdown, setShowOtherBreakdown] = useState(false);
+
+  // Reset hovered segment and tooltips when toggle view changes
+  useEffect(() => {
+    setHoveredSegment(null);
+    setTooltip({ visible: false, x: 0, y: 0, data: null });
+  }, [showOtherBreakdown]);
 
   // Fetch financials data based on current filter state
   useEffect(() => {
@@ -577,24 +584,53 @@ export default function FinancialsDashboard() {
                               {formatCurrency(financialsData.revenueSourceBreakdown.gym_membership)}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>Nutrition Plan</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.revenueSourceBreakdown.fittbot_subscription)}
+                          <div 
+                            onClick={() => setShowOtherBreakdown(!showOtherBreakdown)}
+                            style={{ 
+                              display: "flex", 
+                              justifyContent: "space-between", 
+                              alignItems: "center", 
+                              padding: "10px 15px", 
+                              backgroundColor: "#1e1e1e", 
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              border: "1px dashed #FFC107"
+                            }}
+                          >
+                            <span style={{ fontSize: "13px", color: "#FFC107", display: "flex", alignItems: "center", gap: "6px" }}>
+                              Other Categories {showOtherBreakdown ? "▼" : "►"}
+                            </span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#FFC107" }}>
+                              {formatCurrency(
+                                (financialsData.revenueSourceBreakdown.fittbot_subscription || 0) +
+                                (financialsData.revenueSourceBreakdown.ai_credits || 0) +
+                                (financialsData.revenueSourceBreakdown.ai_diet_coach || 0)
+                              )}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Credits</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.revenueSourceBreakdown.ai_credits || 0)}
-                            </span>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Diet Coach</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.revenueSourceBreakdown.ai_diet_coach || 0)}
-                            </span>
-                          </div>
+                          
+                          {showOtherBreakdown && (
+                            <div style={{ paddingLeft: "15px", display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>Nutrition Plan</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.revenueSourceBreakdown.fittbot_subscription)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Credits</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.revenueSourceBreakdown.ai_credits || 0)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Diet Coach</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.revenueSourceBreakdown.ai_diet_coach || 0)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -752,24 +788,53 @@ export default function FinancialsDashboard() {
                               {formatCurrency(financialsData.netRevenueBreakdown.gym_membership.net_revenue)}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>Nutrition Plan</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.netRevenueBreakdown.fittbot_subscription?.net_revenue || 0)}
+                          <div 
+                            onClick={() => setShowOtherBreakdown(!showOtherBreakdown)}
+                            style={{ 
+                              display: "flex", 
+                              justifyContent: "space-between", 
+                              alignItems: "center", 
+                              padding: "10px 15px", 
+                              backgroundColor: "#1e1e1e", 
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              border: "1px dashed #FFC107"
+                            }}
+                          >
+                            <span style={{ fontSize: "13px", color: "#FFC107", display: "flex", alignItems: "center", gap: "6px" }}>
+                              Other Categories {showOtherBreakdown ? "▼" : "►"}
+                            </span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#FFC107" }}>
+                              {formatCurrency(
+                                (financialsData.netRevenueBreakdown.fittbot_subscription?.net_revenue || 0) +
+                                (financialsData.netRevenueBreakdown.ai_credits?.net_revenue || 0) +
+                                (financialsData.netRevenueBreakdown.ai_diet_coach?.net_revenue || 0)
+                              )}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Credits</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.netRevenueBreakdown.ai_credits?.net_revenue || 0)}
-                            </span>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Diet Coach</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.netRevenueBreakdown.ai_diet_coach?.net_revenue || 0)}
-                            </span>
-                          </div>
+                          
+                          {showOtherBreakdown && (
+                            <div style={{ paddingLeft: "15px", display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>Nutrition Plan</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.netRevenueBreakdown.fittbot_subscription?.net_revenue || 0)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Credits</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.netRevenueBreakdown.ai_credits?.net_revenue || 0)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Diet Coach</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.netRevenueBreakdown.ai_diet_coach?.net_revenue || 0)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -798,75 +863,115 @@ export default function FinancialsDashboard() {
             const dailyPassPercent = totalNet > 0 ? (dailyPassNet / totalNet) * 100 : 0;
             const sessionsPercent = totalNet > 0 ? (sessionsNet / totalNet) * 100 : 0;
 
-            // Segment data with enhanced colors and gradients
-            const segments = [
-              {
-                id: 'fymble',
-                name: 'Nutrition Plan',
-                shortName: 'Fymble Sub',
-                value: fymbleNet,
-                percent: fymblePercent,
-                color: '#FF5757',
-                gradient: 'linear-gradient(135deg, #FF5757 0%, #FF3366 100%)',
-                startAngle: 0,
-                endAngle: fymblePercent * 3.6
-              },
-              {
-                id: 'aiCredits',
-                name: 'AI Credits',
-                shortName: 'AI Credits',
-                value: aiCreditsNet,
-                percent: aiCreditsPercent,
-                color: '#a855f7',
-                gradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-                startAngle: fymblePercent * 3.6,
-                endAngle: (fymblePercent + aiCreditsPercent) * 3.6
-              },
-              {
-                id: 'aiDietCoach',
-                name: 'AI Diet Coach',
-                shortName: 'AI Diet Coach',
-                value: aiDietCoachNet,
-                percent: aiDietCoachPercent,
-                color: '#ec4899',
-                gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
-                startAngle: (fymblePercent + aiCreditsPercent) * 3.6,
-                endAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent) * 3.6
-              },
-              {
-                id: 'gym',
-                name: 'Gym Membership',
-                shortName: 'Gym Membership',
-                value: gymNet,
-                percent: gymPercent,
-                color: '#4ade80',
-                gradient: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
-                startAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent) * 3.6,
-                endAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent + gymPercent) * 3.6
-              },
-              {
-                id: 'dailyPass',
-                name: 'Daily Pass',
-                shortName: 'Daily Pass',
-                value: dailyPassNet,
-                percent: dailyPassPercent,
-                color: '#3b82f6',
-                gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                startAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent + gymPercent) * 3.6,
-                endAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent + gymPercent + dailyPassPercent) * 3.6
-              },
-              {
-                id: 'sessions',
-                name: 'Fitness classes',
-                shortName: 'Fitness classes',
-                value: sessionsNet,
-                percent: sessionsPercent,
-                color: '#f59e0b',
-                gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                startAngle: (fymblePercent + aiCreditsPercent + aiDietCoachPercent + gymPercent + dailyPassPercent) * 3.6,
-                endAngle: 360
-              }
-            ];
+            const otherNet = fymbleNet + aiCreditsNet + aiDietCoachNet;
+            const otherPercent = fymblePercent + aiCreditsPercent + aiDietCoachPercent;
+
+            let segments = [];
+            if (showOtherBreakdown) {
+              segments = [
+                {
+                  id: 'fymble',
+                  name: 'Nutrition Plan',
+                  shortName: 'Nutrition Plan',
+                  value: fymbleNet,
+                  percent: fymblePercent,
+                  color: '#FFC107',
+                  gradient: 'linear-gradient(135deg, #FFC107 0%, #FFB300 100%)',
+                },
+                {
+                  id: 'aiCredits',
+                  name: 'AI Credits',
+                  shortName: 'AI Credits',
+                  value: aiCreditsNet,
+                  percent: aiCreditsPercent,
+                  color: '#FF9800',
+                  gradient: 'linear-gradient(135deg, #FF9800 0%, #F57C00 100%)',
+                },
+                {
+                  id: 'aiDietCoach',
+                  name: 'AI Diet Coach',
+                  shortName: 'AI Diet Coach',
+                  value: aiDietCoachNet,
+                  percent: aiDietCoachPercent,
+                  color: '#ec4899',
+                  gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+                },
+                {
+                  id: 'gym',
+                  name: 'Gym Membership',
+                  shortName: 'Gym Membership',
+                  value: gymNet,
+                  percent: gymPercent,
+                  color: '#4ade80',
+                  gradient: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                },
+                {
+                  id: 'dailyPass',
+                  name: 'Daily Pass',
+                  shortName: 'Daily Pass',
+                  value: dailyPassNet,
+                  percent: dailyPassPercent,
+                  color: '#3b82f6',
+                  gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                },
+                {
+                  id: 'sessions',
+                  name: 'Fitness classes',
+                  shortName: 'Fitness classes',
+                  value: sessionsNet,
+                  percent: sessionsPercent,
+                  color: '#f59e0b',
+                  gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                }
+              ];
+            } else {
+              segments = [
+                {
+                  id: 'dailyPass',
+                  name: 'Daily Pass',
+                  shortName: 'Daily Pass',
+                  value: dailyPassNet,
+                  percent: dailyPassPercent,
+                  color: '#3b82f6',
+                  gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                },
+                {
+                  id: 'sessions',
+                  name: 'Fitness classes',
+                  shortName: 'Fitness classes',
+                  value: sessionsNet,
+                  percent: sessionsPercent,
+                  color: '#f59e0b',
+                  gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                },
+                {
+                  id: 'gym',
+                  name: 'Gym Membership',
+                  shortName: 'Gym Membership',
+                  value: gymNet,
+                  percent: gymPercent,
+                  color: '#4ade80',
+                  gradient: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                },
+                {
+                  id: 'other',
+                  name: 'Other Categories',
+                  shortName: 'Other Categories',
+                  value: otherNet,
+                  percent: otherPercent,
+                  color: '#FFC107',
+                  gradient: 'linear-gradient(135deg, #FFC107 0%, #FFB300 100%)',
+                }
+              ];
+            }
+
+            // Recompute angles dynamically based on the active segments
+            let accumulatedPercent = 0;
+            segments.forEach((seg, idx) => {
+              seg.startAngle = accumulatedPercent * 3.6;
+              accumulatedPercent += seg.percent;
+              seg.endAngle = idx === segments.length - 1 ? 360 : accumulatedPercent * 3.6;
+            });
 
             // Convert polar to cartesian coordinates
             const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
@@ -966,6 +1071,11 @@ export default function FinancialsDashboard() {
                                   onMouseEnter={(e) => handleMouseEnter(segment, e)}
                                   onMouseLeave={handleMouseLeave}
                                   onMouseMove={(e) => handleMouseEnter(segment, e)}
+                                  onClick={() => {
+                                    if (segment.id === 'other' || segment.id === 'fymble' || segment.id === 'aiCredits' || segment.id === 'aiDietCoach') {
+                                      setShowOtherBreakdown(!showOtherBreakdown);
+                                    }
+                                  }}
                                 />
 
                                 {/* Animated entry effect */}
@@ -1041,6 +1151,11 @@ export default function FinancialsDashboard() {
                               key={segment.id}
                               onMouseEnter={() => setHoveredSegment(segment.id)}
                               onMouseLeave={() => setHoveredSegment(null)}
+                              onClick={() => {
+                                if (segment.id === 'other' || segment.id === 'fymble' || segment.id === 'aiCredits' || segment.id === 'aiDietCoach') {
+                                  setShowOtherBreakdown(!showOtherBreakdown);
+                                }
+                              }}
                               style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -1319,24 +1434,53 @@ export default function FinancialsDashboard() {
                               {formatCurrency(financialsData.grossProfitBreakdown.gym_membership.gross_profit)}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>Nutrition Plan</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.grossProfitBreakdown.fittbot_subscription.gross_profit)}
+                          <div 
+                            onClick={() => setShowOtherBreakdown(!showOtherBreakdown)}
+                            style={{ 
+                              display: "flex", 
+                              justifyContent: "space-between", 
+                              alignItems: "center", 
+                              padding: "10px 15px", 
+                              backgroundColor: "#1e1e1e", 
+                              borderRadius: "6px",
+                              cursor: "pointer",
+                              border: "1px dashed #FFC107"
+                            }}
+                          >
+                            <span style={{ fontSize: "13px", color: "#FFC107", display: "flex", alignItems: "center", gap: "6px" }}>
+                              Other Categories {showOtherBreakdown ? "▼" : "►"}
+                            </span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#FFC107" }}>
+                              {formatCurrency(
+                                (financialsData.grossProfitBreakdown.fittbot_subscription?.gross_profit || 0) +
+                                (financialsData.grossProfitBreakdown.ai_credits?.gross_profit || 0) +
+                                (financialsData.grossProfitBreakdown.ai_diet_coach?.gross_profit || 0)
+                              )}
                             </span>
                           </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Credits</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.grossProfitBreakdown.ai_credits?.gross_profit || 0)}
-                            </span>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
-                            <span style={{ fontSize: "13px", color: "#aaa" }}>AI Diet Coach</span>
-                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
-                              {formatCurrency(financialsData.grossProfitBreakdown.ai_diet_coach?.gross_profit || 0)}
-                            </span>
-                          </div>
+                          
+                          {showOtherBreakdown && (
+                            <div style={{ paddingLeft: "15px", display: "flex", flexDirection: "column", gap: "8px", marginTop: "4px" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>Nutrition Plan</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.grossProfitBreakdown.fittbot_subscription?.gross_profit || 0)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Credits</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.grossProfitBreakdown.ai_credits?.gross_profit || 0)}
+                                </span>
+                              </div>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#252525", borderRadius: "4px" }}>
+                                <span style={{ fontSize: "12px", color: "#aaa" }}>AI Diet Coach</span>
+                                <span style={{ fontSize: "14px", fontWeight: "600", color: "#fff" }}>
+                                  {formatCurrency(financialsData.grossProfitBreakdown.ai_diet_coach?.gross_profit || 0)}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

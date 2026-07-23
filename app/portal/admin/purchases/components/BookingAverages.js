@@ -7,18 +7,14 @@ const SOURCE_COLORS = {
   daily_pass: "#FF5757",
   sessions: "#28a745",
   gym_membership: "#ffc107",
-  fittbot_subscription: "#17a2b8",
-  ai_credits: "#06b6d4",
-  ai_diet_coach: "#E91E63"
+  other: "#FFC107"
 };
 
 const SOURCE_LABELS = {
   daily_pass: "Daily Pass",
   sessions: "Fitness Classes",
   gym_membership: "Gym Membership",
-  fittbot_subscription: "Nutritionist Plan",
-  ai_credits: "AI Credits",
-  ai_diet_coach: "AI Diet Coach"
+  other: "Other Categories"
 };
 
 export default function BookingAverages() {
@@ -82,7 +78,13 @@ export default function BookingAverages() {
 
   // Prepare chart data for each average with source breakdown
   const prepareChartData = (breakdown) => {
-    return Object.entries(breakdown).map(([source, value]) => ({
+    const groupedBreakdown = {
+      daily_pass: breakdown.daily_pass || 0,
+      sessions: breakdown.sessions || 0,
+      gym_membership: breakdown.gym_membership || 0,
+      other: (breakdown.fittbot_subscription || 0) + (breakdown.ai_credits || 0) + (breakdown.ai_diet_coach || 0)
+    };
+    return Object.entries(groupedBreakdown).map(([source, value]) => ({
       name: SOURCE_LABELS[source],
       value: value,
       source: source

@@ -23,6 +23,12 @@ export default function MRR() {
 
   // Pie chart interaction states
   const [hoveredSegment, setHoveredSegment] = useState(null);
+  const [showOtherBreakdown, setShowOtherBreakdown] = useState(false);
+
+  // Reset hovered segment when toggle changes
+  useEffect(() => {
+    setHoveredSegment(null);
+  }, [showOtherBreakdown]);
 
   // Format currency - show exactly 2 decimal places
   const formatCurrency = (amount) => {
@@ -168,66 +174,101 @@ export default function MRR() {
             const dailyPassPercent = ((breakdown.daily_pass || 0) / total) * 100;
             const sessionsPercent = ((breakdown.sessions || 0) / total) * 100;
 
-            // Create segments for pie chart (only non-zero values)
-            const segments = [
-              {
-                id: 'fittbot',
-                name: 'Nutrition Plan',
-                value: breakdown.fittbot_subscription || 0,
-                percent: fittbotPercent,
-                color: '#FF5757',
-                startAngle: 0,
-                endAngle: fittbotPercent * 3.6
-              },
-              {
-                id: 'aiCredits',
-                name: 'AI Credits',
-                value: breakdown.ai_credits || 0,
-                percent: aiCreditsPercent,
-                color: '#a855f7',
-                startAngle: fittbotPercent * 3.6,
-                endAngle: (fittbotPercent + aiCreditsPercent) * 3.6
-              },
-              {
-                id: 'aiDietCoach',
-                name: 'AI Diet Coach',
-                value: breakdown.ai_diet_coach || 0,
-                percent: aiDietCoachPercent,
-                color: '#ec4899',
-                startAngle: (fittbotPercent + aiCreditsPercent) * 3.6,
-                endAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent) * 3.6
-              },
-              {
-                id: 'gym',
-                name: 'Gym Membership',
-                value: breakdown.gym_membership || 0,
-                percent: gymPercent,
-                color: '#4ade80',
-                startAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent) * 3.6,
-                endAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent + gymPercent) * 3.6
-              },
-              {
-                id: 'dailyPass',
-                name: 'Daily Pass',
-                value: breakdown.daily_pass || 0,
-                percent: dailyPassPercent,
-                color: '#60a5fa',
-                startAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent + gymPercent) * 3.6,
-                endAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent + gymPercent + dailyPassPercent) * 3.6
-              },
-              {
-                id: 'sessions',
-                name: 'Fitness classes',
-                value: breakdown.sessions || 0,
-                percent: sessionsPercent,
-                color: '#fbbf24',
-                startAngle: (fittbotPercent + aiCreditsPercent + aiDietCoachPercent + gymPercent + dailyPassPercent) * 3.6,
-                endAngle: 360
-              }
-            ];
+            const fymbleNet = breakdown.fittbot_subscription || 0;
+            const aiCreditsNet = breakdown.ai_credits || 0;
+            const aiDietCoachNet = breakdown.ai_diet_coach || 0;
+            const otherNet = fymbleNet + aiCreditsNet + aiDietCoachNet;
+            const otherPercent = fittbotPercent + aiCreditsPercent + aiDietCoachPercent;
+
+            let segments = [];
+            if (showOtherBreakdown) {
+              segments = [
+                {
+                  id: 'fittbot',
+                  name: 'Nutrition Plan',
+                  value: fymbleNet,
+                  percent: fittbotPercent,
+                  color: '#FFC107',
+                },
+                {
+                  id: 'aiCredits',
+                  name: 'AI Credits',
+                  value: aiCreditsNet,
+                  percent: aiCreditsPercent,
+                  color: '#FF9800',
+                },
+                {
+                  id: 'aiDietCoach',
+                  name: 'AI Diet Coach',
+                  value: aiDietCoachNet,
+                  percent: aiDietCoachPercent,
+                  color: '#ec4899',
+                },
+                {
+                  id: 'gym',
+                  name: 'Gym Membership',
+                  value: breakdown.gym_membership || 0,
+                  percent: gymPercent,
+                  color: '#4ade80',
+                },
+                {
+                  id: 'dailyPass',
+                  name: 'Daily Pass',
+                  value: breakdown.daily_pass || 0,
+                  percent: dailyPassPercent,
+                  color: '#60a5fa',
+                },
+                {
+                  id: 'sessions',
+                  name: 'Fitness classes',
+                  value: breakdown.sessions || 0,
+                  percent: sessionsPercent,
+                  color: '#fbbf24',
+                }
+              ];
+            } else {
+              segments = [
+                {
+                  id: 'other',
+                  name: 'Other Categories',
+                  value: otherNet,
+                  percent: otherPercent,
+                  color: '#FFC107',
+                },
+                {
+                  id: 'gym',
+                  name: 'Gym Membership',
+                  value: breakdown.gym_membership || 0,
+                  percent: gymPercent,
+                  color: '#4ade80',
+                },
+                {
+                  id: 'dailyPass',
+                  name: 'Daily Pass',
+                  value: breakdown.daily_pass || 0,
+                  percent: dailyPassPercent,
+                  color: '#60a5fa',
+                },
+                {
+                  id: 'sessions',
+                  name: 'Fitness classes',
+                  value: breakdown.sessions || 0,
+                  percent: sessionsPercent,
+                  color: '#fbbf24',
+                }
+              ];
+            }
 
             // Filter segments for pie chart (only show non-zero in chart)
             const pieSegments = segments.filter(s => s.value > 0);
+
+            // Recompute angles dynamically based on the active segments
+            let accumulatedPercent = 0;
+            pieSegments.forEach((seg, idx) => {
+              seg.startAngle = accumulatedPercent * 3.6;
+              accumulatedPercent += seg.percent;
+              seg.endAngle = idx === pieSegments.length - 1 ? 360 : accumulatedPercent * 3.6;
+            });
 
             // Convert polar to cartesian coordinates
             const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
@@ -310,6 +351,11 @@ export default function MRR() {
                                   }}
                                   onMouseEnter={() => setHoveredSegment(segment.id)}
                                   onMouseLeave={() => setHoveredSegment(null)}
+                                  onClick={() => {
+                                    if (segment.id === 'other' || segment.id === 'fittbot' || segment.id === 'aiCredits' || segment.id === 'aiDietCoach') {
+                                      setShowOtherBreakdown(!showOtherBreakdown);
+                                    }
+                                  }}
                                 />
 
                                 {/* Animated entry effect */}
@@ -385,6 +431,11 @@ export default function MRR() {
                               key={segment.id}
                               onMouseEnter={() => setHoveredSegment(segment.id)}
                               onMouseLeave={() => setHoveredSegment(null)}
+                              onClick={() => {
+                                if (segment.id === 'other' || segment.id === 'fittbot' || segment.id === 'aiCredits' || segment.id === 'aiDietCoach') {
+                                  setShowOtherBreakdown(!showOtherBreakdown);
+                                }
+                              }}
                               style={{
                                 display: "flex",
                                 flexDirection: "column",

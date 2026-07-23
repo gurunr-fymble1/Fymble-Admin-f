@@ -227,8 +227,8 @@ export default function PurchaseCountPage() {
       // Purchases by Category Sheet
       const categoryData = [
         ["Category", "Purchases", "Unique Users"],
-        ...Object.entries(purchaseData.categoryBreakdown).map(([key, value]) => [
-          key, value.purchases, value.unique_users
+        ...getChartEntries(purchaseData).map(([key, value]) => [
+          sourceLabels[key] || key, value.purchases, value.unique_users
         ])
       ];
       const categoryWs = XLSX.utils.aoa_to_sheet(categoryData);
@@ -256,19 +256,33 @@ export default function PurchaseCountPage() {
   const sourceLabels = {
     daily_pass: "Daily Pass",
     sessions: "Fitness Classes",
+    gym_membership: "Gym Membership",
+    other: "Other Categories",
     fittbot_subscription: "Nutrition Plan",
     ai_credits: "AI Credits",
-    ai_diet_coach: "AI Diet Coach",
-    gym_membership: "Gym Membership"
+    ai_diet_coach: "AI Diet Coach"
   };
 
   const sourceColors = {
     daily_pass: "#ffffffff",
     sessions: "#4CAF50",
-    fittbot_subscription: "#9C27B0",
-    ai_credits: "#FF9800",
-    ai_diet_coach: "#E91E63",
-    gym_membership: "#2196F3"
+    gym_membership: "#2196F3",
+    other: "#FFC107",
+    fittbot_subscription: "#FFC107", // Yellow
+    ai_credits: "#FF9800", // Orange
+    ai_diet_coach: "#E91E63" // Pink
+  };
+
+  const getChartEntries = (data) => {
+    if (!data || !data.categoryBreakdown) return [];
+    
+    // If the selected source filter is 'other', show only the subcategories of other
+    if (source === "other" && data.otherBreakdown) {
+      return Object.entries(data.otherBreakdown);
+    }
+    
+    // Otherwise (source is all/pre-filtered), return categoryBreakdown as is (with lumped 'other')
+    return Object.entries(data.categoryBreakdown);
   };
 
   return (
@@ -502,10 +516,8 @@ export default function PurchaseCountPage() {
               <option value="all">All Sources</option>
               <option value="daily_pass">Daily Pass</option>
               <option value="sessions">Fitness Classes</option>
-              <option value="fittbot_subscription">Nutrition Plan</option>
-              <option value="ai_credits">AI Credits</option>
-              <option value="ai_diet_coach">AI Diet Coach</option>
               <option value="gym_membership">Gym Membership</option>
+              <option value="other">Other Categories</option>
             </select>
           </div>
           <div style={{ flex: 1, minWidth: "200px" }}>
@@ -600,7 +612,7 @@ export default function PurchaseCountPage() {
               Purchases by Category
             </h3>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
-              {Object.entries(purchaseData.categoryBreakdown).map(([key, value]) => (
+              {getChartEntries(purchaseData).map(([key, value]) => (
                 <div key={key} style={{
                   backgroundColor: "#2a2a2a",
                   padding: "16px 18px",
@@ -691,9 +703,9 @@ export default function PurchaseCountPage() {
                 <div style={{ position: "relative", width: "280px", height: "280px", flexShrink: 0 }}>
                   <svg width="280" height="280" viewBox="0 0 280 280" style={{ transform: "rotate(-90deg)", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }}>
                     {(() => {
-                      const entries = Object.entries(purchaseData.categoryBreakdown);
+                      const entries = getChartEntries(purchaseData);
                       let currentAngle = 0;
-                      const total = purchaseData.totalPurchases;
+                      const total = entries.reduce((sum, [_, val]) => sum + (val.purchases || 0), 0);
 
                       return entries.map(([key, value]) => {
                         const percentage = total > 0 ? (value.purchases / total) * 100 : 0;
@@ -801,51 +813,55 @@ export default function PurchaseCountPage() {
 
                   {/* Legend Items */}
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {Object.entries(purchaseData.categoryBreakdown).map(([key, value]) => {
-                      const percentage = purchaseData.totalPurchases > 0 ? (value.purchases / purchaseData.totalPurchases) * 100 : 0;
+                    {(() => {
+                      const entries = getChartEntries(purchaseData);
+                      const total = entries.reduce((sum, [_, val]) => sum + (val.purchases || 0), 0);
+                      return entries.map(([key, value]) => {
+                        const percentage = total > 0 ? (value.purchases / total) * 100 : 0;
 
-                      return (
-                        <div key={key} style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                          padding: "8px 12px",
-                          backgroundColor: "#2a2a2a",
-                          borderRadius: "6px",
-                          border: "1px solid #3a3a3a",
-                          transition: "border-color 0.2s"
-                        }}>
-                          <div
-                            style={{
-                              width: "12px",
-                              height: "12px",
-                              borderRadius: "3px",
-                              backgroundColor: sourceColors[key] || "#888",
-                              flexShrink: 0,
-                              boxShadow: `0 2px 4px ${sourceColors[key]}40`
-                            }}
-                          />
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: "12px", color: "#fff", fontWeight: "500", marginBottom: "1px" }}>
-                              {sourceLabels[key] || key}
-                            </div>
-                            <div style={{ fontSize: "10px", color: "#888" }}>
-                              {value.purchases.toLocaleString('en-IN')} purchases
-                            </div>
-                          </div>
-                          <div style={{
-                            fontSize: "15px",
-                            fontWeight: "700",
-                            color: sourceColors[key] || "#888",
-                            flexShrink: 0,
-                            minWidth: "50px",
-                            textAlign: "right"
+                        return (
+                          <div key={key} style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            padding: "8px 12px",
+                            backgroundColor: "#2a2a2a",
+                            borderRadius: "6px",
+                            border: "1px solid #3a3a3a",
+                            transition: "border-color 0.2s"
                           }}>
-                            {percentage.toFixed(1)}%
+                            <div
+                              style={{
+                                width: "12px",
+                                height: "12px",
+                                borderRadius: "3px",
+                                backgroundColor: sourceColors[key] || "#888",
+                                flexShrink: 0,
+                                boxShadow: `0 2px 4px ${sourceColors[key]}40`
+                              }}
+                            />
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ fontSize: "12px", color: "#fff", fontWeight: "500", marginBottom: "1px" }}>
+                                {sourceLabels[key] || key}
+                              </div>
+                              <div style={{ fontSize: "10px", color: "#888" }}>
+                                {value.purchases.toLocaleString('en-IN')} purchases
+                              </div>
+                            </div>
+                            <div style={{
+                              fontSize: "15px",
+                              fontWeight: "700",
+                              color: sourceColors[key] || "#888",
+                              flexShrink: 0,
+                              minWidth: "50px",
+                              textAlign: "right"
+                            }}>
+                              {percentage.toFixed(1)}%
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>
@@ -1201,7 +1217,7 @@ export default function PurchaseCountPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(purchaseData.categoryBreakdown).map(([key, value]) => (
+                  {getChartEntries(purchaseData).map(([key, value]) => (
                     <tr key={key} style={{ borderBottom: "1px solid #2a2a2a" }}>
                       <td style={{ padding: "12px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1210,7 +1226,7 @@ export default function PurchaseCountPage() {
                               width: "10px",
                               height: "10px",
                               borderRadius: "3px",
-                              backgroundColor: "#888",
+                              backgroundColor: sourceColors[key] || "#888",
                             }}
                           />
                           <span style={{ fontSize: "14px", color: "#fff" }}>
@@ -1237,7 +1253,7 @@ export default function PurchaseCountPage() {
                       {purchaseData.totalPurchases.toLocaleString('en-IN')}
                     </td>
                     <td style={{ padding: "12px", textAlign: "right", fontSize: "14px", color: "#fff" }}>
-                      {Object.values(purchaseData.categoryBreakdown).reduce((sum, cat) => sum + cat.unique_users, 0).toLocaleString('en-IN')}
+                      {getChartEntries(purchaseData).reduce((sum, cat) => sum + cat[1].unique_users, 0).toLocaleString('en-IN')}
                     </td>
                     <td style={{ padding: "12px", textAlign: "right", fontSize: "14px", color: "#aaa" }}>
                       -

@@ -56,7 +56,7 @@ export default function RecurringSubscribers() {
         params.search = debouncedSearchTerm;
       }
 
-      const response = await axiosInstance.get("/api/admin/dashboard/recurring-subscribers/details", {
+      const response = await axiosInstance.get("", {   //      --       /api/admin/dashboard/recurring-subscribers/details
         params,
       });
 

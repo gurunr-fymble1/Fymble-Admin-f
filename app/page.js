@@ -56,7 +56,7 @@ export default function AdminLogin() {
           if (user.role === "admin") {
             router.push("/portal/admin/home");
           } else if (user.role === "support") {
-            router.push("/portal/support/fittbotbusiness");
+            router.push("/portal/support/home");
           } else if (user.role === "nutritionist") {
             router.push("/portal/nutritionist/home");
           }
@@ -110,7 +110,7 @@ export default function AdminLogin() {
           if (response.data.data.role === "admin") {
             router.push("/portal/admin/home");
           } else if (response.data.data.role === "support") {
-            router.push("/portal/support/fittbotbusiness");
+            router.push("/portal/support/home");
           } else if (response.data.data.role === "nutritionist") {
             router.push("/portal/nutritionist/home");
           } else {

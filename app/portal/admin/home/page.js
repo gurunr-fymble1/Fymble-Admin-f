@@ -236,8 +236,8 @@ export default function Home() {
             custom_end_date: formatLocalDate(now),
           },
         }),
-        axiosInstance.get("/api/admin/dashboard/recurring-subscribers").catch(() => null),
-        axiosInstance.get("/api/admin/dashboard/webinar-registrations-count").catch(() => null),
+        axiosInstance.get("").catch(() => null), //            --          /api/admin/dashboard/recurring-subscribers
+        axiosInstance.get("").catch(() => null), //            --          /api/admin/dashboard/webinar-registrations-count
       ]);
 
       if (mainResponse.data.success) {
@@ -1771,13 +1771,13 @@ export default function Home() {
       </div>
 
       {/* Plans Section */}
-      <div className="section-container">
+      {/* <div className="section-container">
         <h3 className="section-heading">
           <span style={{ color: "#FF5757" }}>Nutrition</span><span style={{ color: "#fff" }}> Plans</span>
         </h3>
         <div className="row g-4">
           {/* Nutrition Plans Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          {/* <div className="col-xl-4 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1795,10 +1795,10 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Complementary given Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          {/* <div className="col-xl-4 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1816,7 +1816,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Webinar Registrations Card */}
           {/*
@@ -1840,8 +1840,8 @@ export default function Home() {
             </div>
           </div>
           */}
-        </div>
-      </div>
+        {/* </div>
+      </div> */}
 
       {/* GYM Mate Section */}
       <div className="section-container">
@@ -2081,7 +2081,7 @@ export default function Home() {
       */}
 
       {/* Recurring Subscribers Section */}
-      <div className="section-container">
+      {/* <div className="section-container">
         <h3 className="section-heading">
           <span style={{ color: "#FF5757" }}>Recurring Nutrition</span> Subscribers
         </h3>
@@ -2106,7 +2106,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Reward Program Participants Section */}
       <div className="section-container">

@@ -317,10 +317,15 @@ export default function RoleBasedLayout({ children }) {
             path: "/portal/admin/export-logs",
           },
           {
-            name: "Nutrition Activity",
-            icon: MdRestaurantMenu,
-            path: "/portal/admin/nutrition-activity",
+            name: "Payout Calculation",
+            icon: HiCurrencyRupee,
+            path: "/portal/admin/payment-data",
           },
+          // {
+          //   name: "Nutrition Activity",
+          //   icon: MdRestaurantMenu,
+          //   path: "/portal/admin/nutrition-activity",
+          // },
           // {
           //   name: "Marketing",
           //   icon: HiOutlineSpeakerphone,
@@ -378,6 +383,11 @@ export default function RoleBasedLayout({ children }) {
             name: "Bookings",
             icon: BookingsIcon,
             path: "/portal/admin/purchases",
+          },
+          {
+            name: "Payout Calculation",
+            icon: HiCurrencyRupee,
+            path: "/portal/admin/payment-data",
           },
         ];
       case "telecaller":
@@ -474,7 +484,9 @@ export default function RoleBasedLayout({ children }) {
   const hasAccess = (userRole, pathname) => {
     const roleRoutes = {
       admin: ["/portal/admin"],
-      support: ["/portal/support", "/portal/admin/gymplans", "/portal/admin/gymphotos", "/portal/admin/gymdetails", "/portal/admin/verified-gyms", "/portal/admin/unverified-gyms", "/portal/admin/unverified-splitup", "/portal/admin/purchases", "/portal/admin/tracking"],
+      support: ["/portal/support", "/portal/admin/gymplans", "/portal/admin/gymphotos", "/portal/admin/gymdetails", 
+        "/portal/admin/verified-gyms", "/portal/admin/unverified-gyms", "/portal/admin/unverified-splitup", "/portal/admin/purchases", 
+        "/portal/admin/tracking", "/portal/admin/payment-data"],
       telecaller: ["/portal/telecaller"],
       nutritionist: ["/portal/nutritionist"],
     };
