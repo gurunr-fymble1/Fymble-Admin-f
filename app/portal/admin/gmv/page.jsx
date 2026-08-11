@@ -109,8 +109,8 @@ function StatCard({ label, icon, count, revenue, color, loading }) {
 
 // ── Combined totals bar ───────────────────────────────────────────────────────
 function TotalsBar({ data, loading }) {
-  const totalCount = (data?.daily_pass?.count || 0) + (data?.session?.count || 0) + (data?.nutrition_plan?.count || 0) + (data?.gym_membership?.count || 0) + (data?.ai_credits?.count || 0) + (data?.ai_diet_coach?.count || 0);
-  const totalRevenue = (data?.daily_pass?.total_revenue || 0) + (data?.session?.total_revenue || 0) + (data?.nutrition_plan?.total_revenue || 0) + (data?.gym_membership?.total_revenue || 0) + (data?.ai_credits?.total_revenue || 0) + (data?.ai_diet_coach?.total_revenue || 0);
+  const totalCount = (data?.daily_pass?.count || 0) + (data?.session?.count || 0) + (data?.nutrition_plan?.count || 0) + (data?.gym_membership?.count || 0) + (data?.ai_credits?.count || 0) + (data?.ai_diet_coach?.count || 0) + (data?.kyra_ai?.count || 0);
+  const totalRevenue = (data?.daily_pass?.total_revenue || 0) + (data?.session?.total_revenue || 0) + (data?.nutrition_plan?.total_revenue || 0) + (data?.gym_membership?.total_revenue || 0) + (data?.ai_credits?.total_revenue || 0) + (data?.ai_diet_coach?.total_revenue || 0) + (data?.kyra_ai?.total_revenue || 0);
 
   return (
     <div style={{
@@ -128,7 +128,7 @@ function TotalsBar({ data, loading }) {
         <div style={{ fontSize: "22px" }}>📊</div>
         <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>Combined GMV</span>
         <span style={{ fontSize: "11px", color: "#666", background: "#2a2a2a", padding: "2px 8px", borderRadius: "12px" }}>
-          Daily Pass · Fitness Class · Nutrition · Gym Membership · AI Credits · AI Diet Coach
+          Daily Pass · Fitness Class · Nutrition · Gym Membership · AI Credits · AI Diet Coach · Kyra AI
         </span>
       </div>
 
@@ -164,6 +164,7 @@ function RevenueShareBar({ data, loading }) {
     { key: "gym_membership", label: "Gym Membership",  color1: "#4ade80", color2: "#22c55e" },
     { key: "ai_credits",     label: "AI Credits",      color1: "#06b6d4", color2: "#0891b2" },
     { key: "ai_diet_coach",  label: "AI Diet Coach",   color1: "#E91E63", color2: "#C2185B" },
+    { key: "kyra_ai",        label: "Kyra AI",         color1: "#a855f7", color2: "#7c3aed" },
   ];
 
   const total = SEGMENTS_CONFIG.reduce((s, seg) => s + (data?.[seg.key]?.total_revenue || 0), 0);
@@ -266,6 +267,7 @@ export default function GMVPage() {
     { key: "gym_membership", name: "Gym Membership",  icon: "🏢", color: "#4ade80" },
     { key: "ai_credits",     name: "AI Credits",      icon: "🤖", color: "#06b6d4" },
     { key: "ai_diet_coach",  name: "AI Diet Coach",   icon: "🍎", color: "#E91E63" },
+    { key: "kyra_ai",        name: "Kyra AI",         icon: "✨", color: "#a855f7" },
   ];
 
   return (
@@ -350,6 +352,7 @@ export default function GMVPage() {
           <StatCard label="Gym Membership"  icon="🏢" count={data?.gym_membership?.count}  revenue={data?.gym_membership?.total_revenue}  color="#4ade80" loading={loading} />
           <StatCard label="AI Credits"      icon="🤖" count={data?.ai_credits?.count}      revenue={data?.ai_credits?.total_revenue}      color="#06b6d4" loading={loading} />
           <StatCard label="AI Diet Coach"   icon="🍎" count={data?.ai_diet_coach?.count}   revenue={data?.ai_diet_coach?.total_revenue}   color="#E91E63" loading={loading} />
+          <StatCard label="Kyra AI"         icon="✨" count={data?.kyra_ai?.count}         revenue={data?.kyra_ai?.total_revenue}         color="#a855f7" loading={loading} />
         </div>
       </div>
 

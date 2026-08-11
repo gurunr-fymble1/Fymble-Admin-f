@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FaDownload, FaChevronLeft } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
@@ -23,6 +23,8 @@ export default function PurchaseHistory() {
   const [aiCreditsLoading, setAiCreditsLoading] = useState(false);
   const [aiDietCoachData, setAiDietCoachData] = useState([]);
   const [aiDietCoachLoading, setAiDietCoachLoading] = useState(false);
+  const [kyraAiData, setKyraAiData] = useState([]);
+  const [kyraAiLoading, setKyraAiLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   // Security Verification Flow Hook
@@ -120,6 +122,39 @@ export default function PurchaseHistory() {
     }
   }, [clientId]);
 
+  // Fetch Kyra AI subscription data
+  const fetchKyraAiData = useCallback(async () => {
+    try {
+      setKyraAiLoading(true);
+      const response = await axiosInstance.get(`/api/admin/users/${clientId}/kyra-ai`);
+      if (response.data.success) {
+        setKyraAiData(response.data.data);
+      }
+    } catch (err) {
+      alert("Failed to load Kyra AI data. Please try again.");
+    } finally {
+      setKyraAiLoading(false);
+    }
+  }, [clientId]);
+
+  // Combined data for "Other" tab
+  const otherData = useMemo(() => {
+    const list = [
+      ...subscriptionData.map((sub) => ({ ...sub, otherType: "Nutrition Plan" })),
+      ...aiCreditsData.map((ai) => ({ ...ai, otherType: "AI Credits" })),
+      ...aiDietCoachData.map((ai) => ({ ...ai, otherType: "AI Diet Coach" })),
+    ];
+    // Sort descending by date
+    list.sort((a, b) => {
+      const dateA = new Date(a.captured_at || a.created_at).getTime();
+      const dateB = new Date(b.captured_at || b.created_at).getTime();
+      return dateB - dateA;
+    });
+    return list;
+  }, [subscriptionData, aiCreditsData, aiDietCoachData]);
+
+  const otherLoading = subscriptionLoading || aiCreditsLoading || aiDietCoachLoading;
+
   useEffect(() => {
     fetchDailyPassData();
   }, [fetchDailyPassData]);
@@ -127,16 +162,24 @@ export default function PurchaseHistory() {
   useEffect(() => {
     if (activeTab === "sessions") {
       fetchSessionData();
-    } else if (activeTab === "subscription") {
-      fetchSubscriptionData();
     } else if (activeTab === "gym-membership") {
       fetchGymMembershipData();
-    } else if (activeTab === "ai-credits") {
+    } else if (activeTab === "kyra-ai") {
+      fetchKyraAiData();
+    } else if (activeTab === "other") {
+      fetchSubscriptionData();
       fetchAiCreditsData();
-    } else if (activeTab === "ai-diet-coach") {
       fetchAiDietCoachData();
     }
-  }, [activeTab, fetchSessionData, fetchSubscriptionData, fetchGymMembershipData, fetchAiCreditsData, fetchAiDietCoachData]);
+  }, [
+    activeTab,
+    fetchSessionData,
+    fetchSubscriptionData,
+    fetchGymMembershipData,
+    fetchAiCreditsData,
+    fetchAiDietCoachData,
+    fetchKyraAiData,
+  ]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
@@ -245,8 +288,7 @@ export default function PurchaseHistory() {
               sessionData.length === 0 &&
               subscriptionData.length === 0 &&
               gymMembershipData.length === 0 &&
-              aiCreditsData.length === 0 &&
-              aiDietCoachData.length === 0
+              kyraAiData.length === 0
             )
           }
           style={{
@@ -267,8 +309,7 @@ export default function PurchaseHistory() {
                 sessionData.length === 0 &&
                 subscriptionData.length === 0 &&
                 gymMembershipData.length === 0 &&
-                aiCreditsData.length === 0 &&
-                aiDietCoachData.length === 0
+                kyraAiData.length === 0
               )
                 ? 0.5
                 : 1,
@@ -280,8 +321,7 @@ export default function PurchaseHistory() {
                 sessionData.length === 0 &&
                 subscriptionData.length === 0 &&
                 gymMembershipData.length === 0 &&
-                aiCreditsData.length === 0 &&
-                aiDietCoachData.length === 0
+                kyraAiData.length === 0
               )
             ) {
               e.target.style.backgroundColor = "#e64c4c";
@@ -311,28 +351,22 @@ export default function PurchaseHistory() {
           Fitness Classes
         </button>
         <button
-          className={`tab-button ${activeTab === "subscription" ? "active" : ""}`}
-          onClick={() => setActiveTab("subscription")}
-        >
-          Nutrition Plan
-        </button>
-        <button
           className={`tab-button ${activeTab === "gym-membership" ? "active" : ""}`}
           onClick={() => setActiveTab("gym-membership")}
         >
           Gym Membership
         </button>
         <button
-          className={`tab-button ${activeTab === "ai-credits" ? "active" : ""}`}
-          onClick={() => setActiveTab("ai-credits")}
+          className={`tab-button ${activeTab === "kyra-ai" ? "active" : ""}`}
+          onClick={() => setActiveTab("kyra-ai")}
         >
-          AI Credits
+          Kyra AI
         </button>
         <button
-          className={`tab-button ${activeTab === "ai-diet-coach" ? "active" : ""}`}
-          onClick={() => setActiveTab("ai-diet-coach")}
+          className={`tab-button ${activeTab === "other" ? "active" : ""}`}
+          onClick={() => setActiveTab("other")}
         >
-          AI Diet Coach
+          Other
         </button>
       </div>
 
@@ -497,9 +531,9 @@ export default function PurchaseHistory() {
           </div>
         )}
 
-        {activeTab === "subscription" && (
-          <div className="subscription-tab">
-            {subscriptionLoading ? (
+        {activeTab === "other" && (
+          <div className="other-tab">
+            {otherLoading ? (
               <div
                 style={{
                   display: "flex",
@@ -519,10 +553,10 @@ export default function PurchaseHistory() {
                   }}
                 />
               </div>
-            ) : subscriptionData.length === 0 ? (
+            ) : otherData.length === 0 ? (
               <div className="no-data-message">
-                <div style={{ fontSize: "48px", marginBottom: "1rem" }}>💎</div>
-                <p>No Nutrition Plan found</p>
+                <div style={{ fontSize: "48px", marginBottom: "1rem" }}>📦</div>
+                <p>No other purchases found</p>
               </div>
             ) : (
               <div className="table-responsive">
@@ -530,20 +564,52 @@ export default function PurchaseHistory() {
                   <thead>
                     <tr>
                       <th>Purchase Date</th>
+                      <th>Type</th>
                       <th>Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {subscriptionData.map((sub) => (
-                      <tr key={sub.id}>
-                        <td>{formatDateTime(sub.captured_at || sub.created_at)}</td>
-                        <td>
-                          {sub.amount
-                            ? `₹${(sub.amount / 100).toFixed(2)}`
-                            : "-"}
-                        </td>
-                      </tr>
-                    ))}
+                    {otherData.map((item, idx) => {
+                      let typeColor = "#a855f7";
+                      let typeBg = "rgba(168, 85, 247, 0.12)";
+                      let typeBorder = "rgba(168, 85, 247, 0.25)";
+
+                      if (item.otherType === "Nutrition Plan") {
+                        typeColor = "#FF5757";
+                        typeBg = "rgba(255, 87, 87, 0.12)";
+                        typeBorder = "rgba(255, 87, 87, 0.25)";
+                      } else if (item.otherType === "AI Credits") {
+                        typeColor = "#38bdf8";
+                        typeBg = "rgba(56, 189, 248, 0.12)";
+                        typeBorder = "rgba(56, 189, 248, 0.25)";
+                      }
+
+                      return (
+                        <tr key={item.id || idx}>
+                          <td>{formatDateTime(item.captured_at || item.created_at)}</td>
+                          <td>
+                            <span style={{
+                              color: typeColor,
+                              backgroundColor: typeBg,
+                              border: `1px solid ${typeBorder}`,
+                              padding: "4px 10px",
+                              borderRadius: "20px",
+                              fontSize: "12px",
+                              fontWeight: "600",
+                              textTransform: "uppercase",
+                              display: "inline-block"
+                            }}>
+                              {item.otherType}
+                            </span>
+                          </td>
+                          <td>
+                            {item.amount
+                              ? `₹${(item.amount / 100).toFixed(2)}`
+                              : "-"}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -631,9 +697,9 @@ export default function PurchaseHistory() {
           </div>
         )}
 
-        {activeTab === "ai-credits" && (
-          <div className="ai-credits-tab">
-            {aiCreditsLoading ? (
+        {activeTab === "kyra-ai" && (
+          <div className="kyra-ai-tab">
+            {kyraAiLoading ? (
               <div
                 style={{
                   display: "flex",
@@ -653,10 +719,10 @@ export default function PurchaseHistory() {
                   }}
                 />
               </div>
-            ) : aiCreditsData.length === 0 ? (
+            ) : kyraAiData.length === 0 ? (
               <div className="no-data-message">
-                <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🪄</div>
-                <p>No AI Credit purchases found</p>
+                <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🤖</div>
+                <p>No Kyra AI subscriptions found</p>
               </div>
             ) : (
               <div className="table-responsive">
@@ -664,20 +730,50 @@ export default function PurchaseHistory() {
                   <thead>
                     <tr>
                       <th>Purchase Date</th>
-                      <th>Amount</th>
+                      <th>Valid From</th>
+                      <th>Valid Until</th>
+                      <th>Auto Renew</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {aiCreditsData.map((ai) => (
-                      <tr key={ai.id}>
-                        <td>{formatDateTime(ai.captured_at || ai.created_at)}</td>
-                        <td>
-                          {ai.amount
-                            ? `₹${(ai.amount / 100).toFixed(2)}`
-                            : "-"}
-                        </td>
-                      </tr>
-                    ))}
+                    {kyraAiData.map((sub) => {
+                      const statusStyle = getStatusColor(sub.status);
+                      return (
+                        <tr key={sub.id}>
+                          <td>{formatDateTime(sub.created_at)}</td>
+                          <td>{formatDate(sub.active_from)}</td>
+                          <td>{formatDate(sub.active_until)}</td>
+                          <td>
+                            <span
+                              style={{
+                                color: sub.auto_renew ? "#22c55e" : "#ef4444",
+                                backgroundColor: sub.auto_renew ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                                border: `1px solid ${sub.auto_renew ? "#22c55e" : "#ef4444"}`,
+                                padding: "2px 8px",
+                                borderRadius: "12px",
+                                fontSize: "11px",
+                                fontWeight: "600"
+                              }}
+                            >
+                              {sub.auto_renew ? "Yes" : "No"}
+                            </span>
+                          </td>
+                          <td>
+                            <span
+                              className="status-badge"
+                              style={{
+                                color: statusStyle.color,
+                                backgroundColor: statusStyle.bg,
+                                borderColor: statusStyle.border,
+                              }}
+                            >
+                              {sub.status || "-"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -685,59 +781,6 @@ export default function PurchaseHistory() {
           </div>
         )}
 
-        {activeTab === "ai-diet-coach" && (
-          <div className="ai-diet-coach-tab">
-            {aiDietCoachLoading ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: "200px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    border: "3px solid #3a3a3a",
-                    borderTop: "3px solid #FF5757",
-                    borderRadius: "50%",
-                    animation: "spin 1s linear infinite",
-                  }}
-                />
-              </div>
-            ) : aiDietCoachData.length === 0 ? (
-              <div className="no-data-message">
-                <div style={{ fontSize: "48px", marginBottom: "1rem" }}>🍎</div>
-                <p>No AI Diet Coach purchases found</p>
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <table className="purchase-table">
-                  <thead>
-                    <tr>
-                      <th>Purchase Date</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {aiDietCoachData.map((ai) => (
-                      <tr key={ai.id}>
-                        <td>{formatDateTime(ai.captured_at || ai.created_at)}</td>
-                        <td>
-                          {ai.amount
-                            ? `₹${(ai.amount / 100).toFixed(2)}`
-                            : "-"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
       </div>
       <SecureExportModal {...secureExportProps} />
     </div>

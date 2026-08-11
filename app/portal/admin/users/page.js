@@ -960,6 +960,7 @@ export default function Users() {
 
               if (response.data.success) {
                 const data = response.data.data;
+                // console.log("data::", data)
                 setUsers(data.users);
                 setFilteredTotal(data.total); // Update the filtered total for pagination
                 // NOTE: Do NOT update card counts when restoring state with filters
@@ -1074,7 +1075,8 @@ export default function Users() {
     try {
       const response = await axiosInstance.get(`/api/admin/users/${clientId}/last-purchases`);
       if (response.data.success) {
-        const data = response.data.data;
+        // const data = response.data.data;
+        console.log("data::", data)
         setPurchasesData(prev => ({ ...prev, [clientId]: data }));
         return data;
       }
@@ -1108,7 +1110,7 @@ export default function Users() {
     if (!purchase) return null;
 
     // Only show amount for subscription, membership and AI credits types
-    const showAmount = type === "subscription" || type === "membership" || type === "ai_credits";
+    const showAmount = type === "subscription" || type === "membership" || type === "ai_credits" || type === "kyra_ai";
 
     return (
       <div
@@ -1141,6 +1143,14 @@ export default function Users() {
           <div style={{ fontSize: "12px", color: "#888" }}>
             Last Purchase: {formatDate(purchase.purchase_date)}
           </div>
+          {purchase.active_until && (
+            <div style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
+              <span style={{ color: purchase.status?.toLowerCase() === "active" ? "#28a745" : "#ffa8a8" }}>
+                {purchase.status?.toLowerCase() === "active" ? "Expires: " : "Expired: "}
+              </span>
+              {formatDate(purchase.active_until)}
+            </div>
+          )}
         </div>
         {showAmount && purchase.amount_paid !== undefined && (
           <div style={{ fontSize: "14px", fontWeight: "600", color: "#fff", flexShrink: 0 }}>
@@ -1175,12 +1185,13 @@ export default function Users() {
         const workbook = XLSX.utils.book_new();
 
         // Prepare data for export
-        const headers = ["Name", "Mobile", "Gym Name", "AI Credits", "Joined Date"];
+        const headers = ["Name", "Mobile", "Gym Name", "Kyra AI Status", "Kyra AI Expiry", "Joined Date"];
         const rows = response.data.data.map((user) => [
           user.name || "-",
           user.contact || "-",
           user.gym_name || "-",
-          user.ai_credits || 0,
+          user.kyra_ai || "Inactive",
+          user.kyra_ai_limit || "-",
           user.created_at
             ? new Date(user.created_at).toLocaleDateString("en-IN", {
                 day: "2-digit",
@@ -2602,7 +2613,7 @@ export default function Users() {
         <div className="users-table-header">
           <div className="table-header-cell table-col-name">Name</div>
           <div className="table-header-cell table-col-gym">Gym</div>
-          <div className="table-header-cell table-col-ai-credits">AI Credits</div>
+          <div className="table-header-cell table-col-ai-credits">Kyra AI</div>
           <div className="table-header-cell table-col-platform">Platform</div>
           <div className="table-header-cell table-col-joined">Joined Date</div>
           <div className="table-header-cell table-col-action"></div>
@@ -2652,9 +2663,31 @@ export default function Users() {
                   <div className="cell-value">{user.gym_name || "-"}</div>
                 </div>
 
-                {/* AI Credits Column */}
-                <div className="table-cell table-col-ai-credits" data-label="AI Credits">
-                  <div className="cell-value">{user.ai_credits || 0}</div>
+                {/* Kyra AI Column */}
+                <div className="table-cell table-col-ai-credits" data-label="Kyra AI">
+                  <span
+                    className="kyra-ai-badge"
+                    style={{
+                      color: user.kyra_ai === "Active" ? "#a8d5a2" : "#888",
+                      backgroundColor: user.kyra_ai === "Active" ? "rgba(100, 200, 80, 0.1)" : "rgba(128, 128, 128, 0.1)",
+                      border: `1px solid ${user.kyra_ai === "Active" ? "#4caf50" : "#555"}`,
+                      borderRadius: "6px",
+                      padding: "2px 8px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      textTransform: "capitalize",
+                      display: "inline-block",
+                      marginBottom: user.kyra_ai === "Active" && user.kyra_ai_limit && user.kyra_ai_limit !== "-" ? "4px" : "0"
+                    }}
+                  >
+                    {user.kyra_ai || "Inactive"}
+                  </span>
+                  {user.kyra_ai === "Active" && user.kyra_ai_limit && user.kyra_ai_limit !== "-" && (
+                    <div style={{ fontSize: "11px", color: "#888" }}>
+                      <span style={{ color: "#4caf50" }}>Expires: </span>{" "}
+                      {user.kyra_ai_limit}
+                    </div>
+                  )}
                 </div>
 
                 {/* Platform Column */}
@@ -2731,13 +2764,13 @@ export default function Users() {
                           {renderPurchaseItem(purchasesData[user.client_id].session, "session")}
                           {renderPurchaseItem(purchasesData[user.client_id].membership, "membership")}
                           {renderPurchaseItem(purchasesData[user.client_id].subscription, "subscription")}
-                          {renderPurchaseItem(purchasesData[user.client_id].ai_credits, "ai_credits")}
+                          {renderPurchaseItem(purchasesData[user.client_id].kyra_ai, "kyra_ai")}
                         </div>
                         {!purchasesData[user.client_id].daily_pass &&
                           !purchasesData[user.client_id].session &&
                           !purchasesData[user.client_id].membership &&
                           !purchasesData[user.client_id].subscription && 
-                          !purchasesData[user.client_id].ai_credits && (
+                          !purchasesData[user.client_id].kyra_ai && (
                           <div
                             style={{
                               padding: "20px",

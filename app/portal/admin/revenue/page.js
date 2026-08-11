@@ -537,7 +537,8 @@ export default function RevenueAnalytics() {
     other: "Other Categories",
     fittbot_subscription: "Nutrition Plan",
     ai_credits: "AI Credits",
-    ai_diet_coach: "AI Diet Coach"
+    ai_diet_coach: "AI Diet Coach",
+    kyra_ai: "Kyra AI"
   };
 
   const sourceColors = {
@@ -547,7 +548,8 @@ export default function RevenueAnalytics() {
     other: "#FFC107", // Yellow/Orange
     fittbot_subscription: "#FFC107", // Yellow
     ai_credits: "#FF9800", // Orange
-    ai_diet_coach: "#E91E63" // Pink
+    ai_diet_coach: "#E91E63", // Pink
+    kyra_ai: "#a855f7" // Purple
   };
 
   const getChartEntries = (data) => {
@@ -891,6 +893,7 @@ export default function RevenueAnalytics() {
               <option value="sessions">Fitness Classes</option>
               {/* <option value="fittbot_subscription">Nutrition Plan</option> */}
               <option value="gym_membership">Gym Membership</option>
+              <option value="kyra_ai">Kyra AI</option>
               <option value="other">Other Categories</option>
             </select>
           </div>

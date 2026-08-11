@@ -486,7 +486,7 @@ export default function RoleBasedLayout({ children }) {
       admin: ["/portal/admin"],
       support: ["/portal/support", "/portal/admin/gymplans", "/portal/admin/gymphotos", "/portal/admin/gymdetails", 
         "/portal/admin/verified-gyms", "/portal/admin/unverified-gyms", "/portal/admin/unverified-splitup", "/portal/admin/purchases", 
-        "/portal/admin/tracking", "/portal/admin/payment-data"],
+        "/portal/admin/tracking", "/portal/admin/payment-data", "/portal/admin/kyra"],
       telecaller: ["/portal/telecaller"],
       nutritionist: ["/portal/nutritionist"],
     };
@@ -672,11 +672,19 @@ export default function RoleBasedLayout({ children }) {
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
-              <span
-                style={{ fontWeight: "600", fontSize: "24px", color: role === "nutritionist" ? "#111827" : "white" }}
-              >
-                <span style={{ color: themeColor }}>Fy</span><span style={{ color: role === "nutritionist" ? "#111827" : "#fff" }}>mble</span>
-              </span>
+              {role === "admin" || role === "support" ? (
+                <img 
+                  src="/Fymble.png" 
+                  alt="Fymble" 
+                  style={{ height: "25px", width: "auto", display: "block" }} 
+                />
+              ) : (
+                <span
+                  style={{ fontWeight: "600", fontSize: "24px", color: role === "nutritionist" ? "#111827" : "white" }}
+                >
+                  <span style={{ color: themeColor }}>Fy</span><span style={{ color: role === "nutritionist" ? "#111827" : "#fff" }}>mble</span>
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -937,7 +945,7 @@ export default function RoleBasedLayout({ children }) {
                   margin: "4px 0 0 0",
                 }}
               >
-                Welcome to <span style={{ color: themeColor }}>Fy</span><span style={{ color: role === "nutritionist" ? "#111827" : "#fff" }}>mble</span>{" "}
+                Welcome to <span style={{ color: themeColor }}>Fymble</span>{" "}
                 {userInfo.dashboardType}
               </p>
             </div>

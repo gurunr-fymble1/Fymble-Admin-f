@@ -30,6 +30,8 @@ export default function PurchasesLayout({ children }) {
       setActiveTab("ai-credits");
     } else if (pathname.includes("/ai-diet-coach")) {
       setActiveTab("ai-diet-coach");
+    } else if (pathname.includes("/kyra")) {
+      setActiveTab("ai-plans");
     } else {
       setActiveTab(defaultTab);
     }
@@ -37,7 +39,8 @@ export default function PurchasesLayout({ children }) {
 
   // Define tabs - include purchase-count only for non-support roles
   const tabs = [
-    { id: "all", name: "Fitness Classes/Daily Pass", path: "/portal/admin/purchases/all" },
+    { id: "all", name: "Daily Pass & Classes", path: "/portal/admin/purchases/all" },
+    { id: "ai-plans", name: "Kyra AI", path: "/portal/admin/purchases/kyra" },
     // { id: "nutritionist-plans", name: "Nutrition Plans", path: "/portal/admin/purchases/nutritionist-plans" },
     { id: "gym-memberships", name: "Gym Memberships", path: "/portal/admin/purchases/gym-memberships" },
     // { id: "ai-credits", name: "AI Credits", path: "/portal/admin/purchases/ai-credits" },

@@ -217,7 +217,7 @@ export default function TelecallerConvertedClients() {
     if (!purchase) return null;
 
     // Only show amount for subscription, membership and AI credits types
-    const showAmount = type === "subscription" || type === "membership" || type === "ai_credits";
+    const showAmount = type === "subscription" || type === "membership" || type === "ai_credits" || type === "kyra_ai";
 
     return (
       <div
@@ -673,13 +673,13 @@ export default function TelecallerConvertedClients() {
                                   {renderPurchaseItem(purchasesData[clientId].session, "session")}
                                   {renderPurchaseItem(purchasesData[clientId].membership, "membership")}
                                   {renderPurchaseItem(purchasesData[clientId].subscription, "subscription")}
-                                  {renderPurchaseItem(purchasesData[clientId].ai_credits, "ai_credits")}
+                                  {renderPurchaseItem(purchasesData[clientId].kyra_ai, "kyra_ai")}
                                 </div>
                                 {!purchasesData[clientId].daily_pass &&
                                   !purchasesData[clientId].session &&
                                   !purchasesData[clientId].membership &&
                                   !purchasesData[clientId].subscription &&
-                                  !purchasesData[clientId].ai_credits && (
+                                  !purchasesData[clientId].kyra_ai && (
                                     <div
                                       style={{
                                         padding: "20px",

@@ -87,7 +87,6 @@ export default function PaymentDataPage() {
 
     setStartDate(sDate);
     setEndDate(eDate);
-    fetchPaymentDataWithParams(sDate, eDate);
   };
 
   // Fetch Payment Data from backend with explicit parameters
@@ -213,6 +212,17 @@ export default function PaymentDataPage() {
     );
   }, [tableData]);
 
+  // Auto-fetch data when startDate or endDate changes
+  useEffect(() => {
+    if (startDate && endDate) {
+      fetchPaymentDataWithParams(startDate, endDate);
+    } else {
+      setTableData([]);
+      setRawBuffer(null);
+      setError(null);
+    }
+  }, [startDate, endDate]);
+
   // Debounce search term update (400ms delay)
   useEffect(() => {
     const trimmed = searchTerm.trim();
@@ -331,8 +341,7 @@ export default function PaymentDataPage() {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        const timestamp = new Date().toISOString().slice(0, 19).replace(/[-T:]/g, "");
-        link.download = `payment_data_${startDate}_to_${endDate}_${timestamp}.xlsx`;
+        link.download = `payment_data_${startDate}_to_${endDate}.xlsx`;
         document.body.appendChild(link);
         link.click();
         window.URL.revokeObjectURL(url);
@@ -454,7 +463,7 @@ export default function PaymentDataPage() {
           </div>
 
           {/* Date Input Pickers & Apply Button */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap"}}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <label style={{ fontSize: "13px", color: "#d1d5db", fontWeight: "500" }}>Start Date:</label>
               <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
@@ -472,7 +481,7 @@ export default function PaymentDataPage() {
                     padding: "8px 12px",
                     color: "#ffffff",
                     fontSize: "14px",
-                    outline: "none"
+                    outline: "none", cursor:"pointer"
                   }}
                 />
               </div>
@@ -495,7 +504,8 @@ export default function PaymentDataPage() {
                     padding: "8px 12px",
                     color: "#ffffff",
                     fontSize: "14px",
-                    outline: "none"
+                    outline: "none",
+                    cursor:"pointer"
                   }}
                 />
               </div>

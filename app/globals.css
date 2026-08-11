@@ -1563,6 +1563,9 @@ a {
   flex: 0 0 16%;
   width: 16%;
   min-width: 110px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .table-cell.table-col-platform {
@@ -1701,7 +1704,7 @@ a {
   }
 
   .table-cell.table-col-ai-credits::before {
-    content: "AI Credits";
+    content: "Kyra AI";
   }
 
   .table-cell.table-col-platform::before {

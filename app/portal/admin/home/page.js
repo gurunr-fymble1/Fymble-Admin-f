@@ -126,12 +126,51 @@ export default function Home() {
       weekly_active_users: 0,
       daily_active_users: 0,
     },
+    kyraAI: {
+      active_subscribers: 0,
+      kyra_users: 0,
+    },
   });
 
   const [priceNotifications, setPriceNotifications] = useState([]);
   const [showPriceNotificationModal, setShowPriceNotificationModal] = useState(false);
   const [bookingNotifications, setBookingNotifications] = useState([]);
   const [showBookingNotificationModal, setShowBookingNotificationModal] = useState(false);
+
+  const getBadgeStyles = (type) => {
+    switch (type) {
+      case "Kyra AI":
+        return {
+          backgroundColor: "rgba(168, 85, 247, 0.15)", // purple
+          color: "#c084fc",
+        };
+      case "Nutrition Plan":
+        return {
+          backgroundColor: "rgba(16, 185, 129, 0.15)", // green
+          color: "#34d399",
+        };
+      case "Gym Membership":
+        return {
+          backgroundColor: "rgba(245, 158, 11, 0.15)", // amber
+          color: "#fbbf24",
+        };
+      case "Daily Pass":
+        return {
+          backgroundColor: "rgba(59, 130, 246, 0.15)", // blue
+          color: "#60a5fa",
+        };
+      case "Fitness Class":
+        return {
+          backgroundColor: "rgba(6, 182, 212, 0.15)", // cyan
+          color: "#22d3ee",
+        };
+      default:
+        return {
+          backgroundColor: "rgba(255, 87, 87, 0.15)",
+          color: "#FF5757",
+        };
+    }
+  };
 
   useEffect(() => {
     fetchPriceChangeNotifications();
@@ -357,7 +396,7 @@ export default function Home() {
         });
 
         if (response.data.success) {
-           // Set only this metric's filter to custom
+          // Set only this metric's filter to custom
           config.filterSetter("custom");
           // Hide the modal
           setCustomDateRange({ ...customDateRange, show: false, activeMetric: null });
@@ -444,7 +483,7 @@ export default function Home() {
     }
 
     selectBlurTimeoutRef.current = setTimeout(() => {
-      
+
       if (
         selectValueOnFocusRef.current === "custom" &&
         valueOnBlur === "custom" &&
@@ -923,7 +962,7 @@ export default function Home() {
               <FaTag style={{ color: "#FF5757" }} />
               Gym Price Updates
             </h3>
-            
+
             <p style={{ color: "#9ca3af", fontSize: "14px", marginBottom: "20px" }}>
               The following gyms have recently updated their prices:
             </p>
@@ -1047,7 +1086,7 @@ export default function Home() {
               <FaCalendarCheck style={{ color: "#FF5757" }} />
               New Bookings Today
             </h3>
-            
+
             <p style={{ color: "#9ca3af", fontSize: "14px", marginBottom: "20px" }}>
               The following new bookings have been received today:
             </p>
@@ -1078,19 +1117,17 @@ export default function Home() {
                     <span
                       style={{
                         fontSize: "11px",
-                        backgroundColor: "rgba(255, 87, 87, 0.15)",
-                        color: "#FF5757",
                         padding: "3px 10px",
                         borderRadius: "12px",
-                        textTransform: "capitalize",
                         fontWeight: "600",
                         alignSelf: "center",
+                        ...getBadgeStyles(notif.type)
                       }}
                     >
                       {notif.type}
                     </span>
                   </div>
-                  
+
                   <div style={{ fontSize: "13px", color: "#9ca3af", marginBottom: "6px" }}>
                     {notif.details}
                   </div>
@@ -1242,8 +1279,8 @@ export default function Home() {
                   {(fittbotTotalUsersFilter === "lastMonth" || fittbotTotalUsersFilter === "currentMonth") && customRangeData.totalUsers.applied
                     ? customRangeData.totalUsers.value
                     : fittbotTotalUsersFilter === "custom" && customRangeData.totalUsers.applied
-                    ? customRangeData.totalUsers.value
-                    : dashboardData.fittbot.totalUsers[fittbotTotalUsersFilter]}
+                      ? customRangeData.totalUsers.value
+                      : dashboardData.fittbot.totalUsers[fittbotTotalUsersFilter]}
                 </div>
               </div>
             </div>
@@ -1347,8 +1384,8 @@ export default function Home() {
                   {(fittbotActiveUsersFilter === "lastMonth" || fittbotActiveUsersFilter === "currentMonth") && customRangeData.monthlyActiveUsers.applied
                     ? customRangeData.monthlyActiveUsers.value.toLocaleString()
                     : fittbotActiveUsersFilter === "custom" && customRangeData.monthlyActiveUsers.applied
-                    ? customRangeData.monthlyActiveUsers.value.toLocaleString()
-                    : (dashboardData.fittbot.monthlyActiveUsers[fittbotActiveUsersFilter] || 0).toLocaleString()}
+                      ? customRangeData.monthlyActiveUsers.value.toLocaleString()
+                      : (dashboardData.fittbot.monthlyActiveUsers[fittbotActiveUsersFilter] || 0).toLocaleString()}
                 </div>
                 <div style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
                   Active {fittbotActiveUsersFilter !== "overall" && <span style={{ color: "#888", fontSize: "10px" }}>({fittbotActiveUsersFilter === "week" ? "last 7 days" : fittbotActiveUsersFilter === "month" ? "last 30 days" : fittbotActiveUsersFilter})</span>}
@@ -1704,8 +1741,8 @@ export default function Home() {
                   {fittbotRevenueFilter === "lastMonth" && customRangeData.revenue.applied
                     ? customRangeData.revenue.value
                     : fittbotRevenueFilter === "custom" && customRangeData.revenue.applied
-                    ? customRangeData.revenue.value
-                    : dashboardData.fittbot.revenue[fittbotRevenueFilter]}
+                      ? customRangeData.revenue.value
+                      : dashboardData.fittbot.revenue[fittbotRevenueFilter]}
                 </div>
               </div>
             </div>
@@ -1730,7 +1767,7 @@ export default function Home() {
                     const now = new Date();
                     const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
                     const monthNames = ["January", "February", "March", "April", "May", "June",
-                                       "July", "August", "September", "October", "November", "December"];
+                      "July", "August", "September", "October", "November", "December"];
                     return `${monthNames[lastMonthDate.getMonth()]} ${lastMonthDate.getFullYear()}`;
                   })()}
                 </div>
@@ -1756,10 +1793,10 @@ export default function Home() {
                   {(() => {
                     const now = new Date();
                     const monthNames = ["January", "February", "March", "April", "May", "June",
-                                       "July", "August", "September", "October", "November", "December"];
+                      "July", "August", "September", "October", "November", "December"];
                     const dayNames = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th",
-                                       "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th",
-                                       "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+                      "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th",
+                      "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
                     const day = now.getDate();
                     return `${monthNames[now.getMonth()]} 1 - ${dayNames[day - 1] || day}${day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'}`;
                   })()}
@@ -1777,7 +1814,7 @@ export default function Home() {
         </h3>
         <div className="row g-4">
           {/* Nutrition Plans Card */}
-          {/* <div className="col-xl-4 col-lg-6 col-md-6">
+      {/* <div className="col-xl-4 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1797,8 +1834,8 @@ export default function Home() {
             </div>
           </div> */}
 
-          {/* Complementary given Card */}
-          {/* <div className="col-xl-4 col-lg-6 col-md-6">
+      {/* Complementary given Card */}
+      {/* <div className="col-xl-4 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1818,8 +1855,8 @@ export default function Home() {
             </div>
           </div> */}
 
-          {/* Webinar Registrations Card */}
-          {/*
+      {/* Webinar Registrations Card */}
+      {/*
           <div className="col-xl-4 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
@@ -1840,7 +1877,7 @@ export default function Home() {
             </div>
           </div>
           */}
-        {/* </div>
+      {/* </div>
       </div> */}
 
       {/* GYM Mate Section */}
@@ -2017,6 +2054,50 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Kyra AI Section */}
+      <div className="section-container">
+        <h3 className="section-heading">
+          <span style={{ color: "#FF5757" }}>Kyra</span> AI
+        </h3>
+        <div className="row g-4">
+          {/* Active Subscriptions Card */}
+          <div className="col-xl-4 col-lg-6 col-md-6">
+            <div
+              className="dashboard-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => (window.location.href = "/portal/admin/kyra?tab=subscriptions")}
+            >
+              <div className="card-header-custom extra-space">
+                <h6 className="card-title">Active subscriptions</h6>
+              </div>
+              <div className="card-body-custom">
+                <div className="metric-number">
+                  {dashboardData.kyraAI["active_subscribers"]}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Kyra Users Card */}
+          <div className="col-xl-4 col-lg-6 col-md-6">
+            <div
+              className="dashboard-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => (window.location.href = "/portal/admin/kyra?tab=users")}
+            >
+              <div className="card-header-custom extra-space">
+                <h6 className="card-title">Kyra Users</h6>
+              </div>
+              <div className="card-body-custom">
+                <div className="metric-number">
+                  {dashboardData.kyraAI["kyra_users"]}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>        
       </div>
 
       {/* Gym Photos Details Section - Commented out */}

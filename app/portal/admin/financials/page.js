@@ -584,6 +584,12 @@ export default function FinancialsDashboard() {
                               {formatCurrency(financialsData.revenueSourceBreakdown.gym_membership)}
                             </span>
                           </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
+                            <span style={{ fontSize: "13px", color: "#aaa" }}>Kyra AI</span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
+                              {formatCurrency(financialsData.revenueSourceBreakdown.kyra_ai || 0)}
+                            </span>
+                          </div>
                           <div 
                             onClick={() => setShowOtherBreakdown(!showOtherBreakdown)}
                             style={{ 
@@ -788,6 +794,12 @@ export default function FinancialsDashboard() {
                               {formatCurrency(financialsData.netRevenueBreakdown.gym_membership.net_revenue)}
                             </span>
                           </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
+                            <span style={{ fontSize: "13px", color: "#aaa" }}>Kyra AI</span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
+                              {formatCurrency(financialsData.netRevenueBreakdown.kyra_ai?.net_revenue || 0)}
+                            </span>
+                          </div>
                           <div 
                             onClick={() => setShowOtherBreakdown(!showOtherBreakdown)}
                             style={{ 
@@ -850,15 +862,17 @@ export default function FinancialsDashboard() {
             const fymbleNet = breakdown.fittbot_subscription?.net_revenue || 0;
             const aiCreditsNet = breakdown.ai_credits?.net_revenue || 0;
             const aiDietCoachNet = breakdown.ai_diet_coach?.net_revenue || 0;
+            const kyraAiNet = breakdown.kyra_ai?.net_revenue || 0;
             const gymNet = breakdown.gym_membership.net_revenue;
             const dailyPassNet = breakdown.daily_pass.net_revenue;
             const sessionsNet = breakdown.sessions.net_revenue;
-            const totalNet = fymbleNet + aiCreditsNet + aiDietCoachNet + gymNet + dailyPassNet + sessionsNet;
+            const totalNet = fymbleNet + aiCreditsNet + aiDietCoachNet + kyraAiNet + gymNet + dailyPassNet + sessionsNet;
 
             // Calculate percentages
             const fymblePercent = totalNet > 0 ? (fymbleNet / totalNet) * 100 : 0;
             const aiCreditsPercent = totalNet > 0 ? (aiCreditsNet / totalNet) * 100 : 0;
             const aiDietCoachPercent = totalNet > 0 ? (aiDietCoachNet / totalNet) * 100 : 0;
+            const kyraAiPercent = totalNet > 0 ? (kyraAiNet / totalNet) * 100 : 0;
             const gymPercent = totalNet > 0 ? (gymNet / totalNet) * 100 : 0;
             const dailyPassPercent = totalNet > 0 ? (dailyPassNet / totalNet) * 100 : 0;
             const sessionsPercent = totalNet > 0 ? (sessionsNet / totalNet) * 100 : 0;
@@ -895,6 +909,15 @@ export default function FinancialsDashboard() {
                   percent: aiDietCoachPercent,
                   color: '#ec4899',
                   gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)',
+                },
+                {
+                  id: 'kyraAi',
+                  name: 'Kyra AI',
+                  shortName: 'Kyra AI',
+                  value: kyraAiNet,
+                  percent: kyraAiPercent,
+                  color: '#a855f7',
+                  gradient: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
                 },
                 {
                   id: 'gym',
@@ -954,13 +977,22 @@ export default function FinancialsDashboard() {
                   gradient: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
                 },
                 {
+                  id: 'kyraAi',
+                  name: 'Kyra AI',
+                  shortName: 'Kyra AI',
+                  value: kyraAiNet,
+                  percent: kyraAiPercent,
+                  color: '#a855f7',
+                  gradient: 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
+                },
+                {
                   id: 'other',
                   name: 'Other Categories',
                   shortName: 'Other Categories',
                   value: otherNet,
                   percent: otherPercent,
-                  color: '#FFC107',
-                  gradient: 'linear-gradient(135deg, #FFC107 0%, #FFB300 100%)',
+                  color: '#ff0707ff',
+                  gradient: 'linear-gradient(135deg, #ff0707ff 0%, #ff4600ff 100%)',
                 }
               ];
             }
@@ -1432,6 +1464,12 @@ export default function FinancialsDashboard() {
                             <span style={{ fontSize: "13px", color: "#aaa" }}>Gym Membership</span>
                             <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
                               {formatCurrency(financialsData.grossProfitBreakdown.gym_membership.gross_profit)}
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 15px", backgroundColor: "#1e1e1e", borderRadius: "6px" }}>
+                            <span style={{ fontSize: "13px", color: "#aaa" }}>Kyra AI</span>
+                            <span style={{ fontSize: "16px", fontWeight: "700", color: "#fff" }}>
+                              {formatCurrency(financialsData.grossProfitBreakdown.kyra_ai?.gross_profit || 0)}
                             </span>
                           </div>
                           <div 

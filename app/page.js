@@ -455,11 +455,12 @@ export default function AdminLogin() {
     return (
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
-          <div className={styles.brandContainer}>
-            <h1 className={styles.brandName}>
-              <span className={styles.fitt}>Fy</span>
-              <span className={styles.bot}>mble</span>
-            </h1>
+          <div className={styles.brandContainer} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <img 
+              src="/Fymble.png" 
+              alt="Fymble Logo" 
+              style={{ height: "35px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }} 
+            />
             <p className={styles.subtitle}>Admin Dashboard</p>
           </div>
           <div
@@ -480,11 +481,12 @@ export default function AdminLogin() {
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
         {/* Brand Logo */}
-        <div className={styles.brandContainer}>
-          <h1 className={styles.brandName}>
-            <span className={styles.fitt}>Fy</span>
-            <span className={styles.bot}>mble</span>
-          </h1>
+        <div className={styles.brandContainer} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <img 
+            src="/Fymble.png" 
+            alt="Fymble Logo" 
+            style={{ height: "35px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }} 
+          />
           <p className={styles.subtitle}>Admin Dashboard</p>
         </div>
 

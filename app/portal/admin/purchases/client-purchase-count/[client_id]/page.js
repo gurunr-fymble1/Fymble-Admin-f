@@ -19,7 +19,28 @@ export default function ClientPurchaseSummaryPage() {
         setLoading(true);
         const res = await axiosInstance.get(`/api/admin/purchases/client-purchase-summary/${client_id}`);
         if (res.data.success) {
-          setData(res.data.data);
+          const raw = res.data.data || {};
+          console.log("Raw Data:", raw);  // Debugging
+
+          
+          // Combine "Nutritionist Plans", "AI Credits", and "AI Diet Coach" into "Other"
+          const otherCount = 
+            (raw["Nutritionist Plans"]?.count || 0) +
+            (raw["AI Credits"]?.count || 0) +
+            (raw["AI Diet Coach"]?.count || 0);
+
+          const formattedData = {};
+          
+          if (raw["Daily Pass"]) formattedData["Daily Pass"] = raw["Daily Pass"];
+          if (raw["Fitness Class"]) formattedData["Fitness Class"] = raw["Fitness Class"];
+          if (raw["Gym Membership"]) formattedData["Gym Membership"] = raw["Gym Membership"];
+          if (raw["Kyra AI"]) formattedData["Kyra AI"] = raw["Kyra AI"];
+          
+          if (otherCount > 0) {
+            formattedData["Other"] = { count: otherCount };
+          }
+          
+          setData(formattedData);
         }
       } catch (error) {
         console.error("Error fetching client purchase summary:", error);
@@ -34,21 +55,19 @@ export default function ClientPurchaseSummaryPage() {
   }, [client_id]);
 
   const categoryLabels = {
-    daily_pass: "Daily Pass",
-    sessions: "Fitness Classes",
-    fittbot_subscription: "Nutrition Plan",
-    ai_credits: "AI Credits",
-    ai_diet_coach: "AI Diet Coach",
-    gym_membership: "Gym Membership"
+    "Daily Pass": "Daily Pass",
+    "Fitness Class": "Fitness Classes",
+    "Gym Membership": "Gym Membership",
+    "Kyra AI": "Kyra AI",
+    "Other": "Other"
   };
 
   const categoryColors = {
-    daily_pass: "#3b82f6",
-    sessions: "#f59e0b",
-    fittbot_subscription: "#FF5757",
-    ai_credits: "#a855f7",
-    ai_diet_coach: "#E91E63",
-    gym_membership: "#22c55e"
+    "Daily Pass": "#3b82f6",
+    "Fitness Class": "#f59e0b",
+    "Gym Membership": "#22c55e",
+    "Kyra AI": "#FF5757",
+    "Other": "#a855f7"
   };
 
   const renderCategoryCards = () => {

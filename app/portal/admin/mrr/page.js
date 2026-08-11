@@ -13,6 +13,7 @@ export default function MRR() {
         fittbot_subscription: 0,
         ai_credits: 0,
         ai_diet_coach: 0,
+        kyra_ai: 0,
         gym_membership: 0,
         daily_pass: 0,
         sessions: 0,
@@ -55,6 +56,7 @@ export default function MRR() {
               fittbot_subscription: 0,
               ai_credits: 0,
               ai_diet_coach: 0,
+              kyra_ai: 0,
               gym_membership: 0,
               daily_pass: 0,
               sessions: 0,
@@ -170,6 +172,7 @@ export default function MRR() {
             const fittbotPercent = ((breakdown.fittbot_subscription || 0) / total) * 100;
             const aiCreditsPercent = ((breakdown.ai_credits || 0) / total) * 100;
             const aiDietCoachPercent = ((breakdown.ai_diet_coach || 0) / total) * 100;
+            const kyraAiPercent = ((breakdown.kyra_ai || 0) / total) * 100;
             const gymPercent = ((breakdown.gym_membership || 0) / total) * 100;
             const dailyPassPercent = ((breakdown.daily_pass || 0) / total) * 100;
             const sessionsPercent = ((breakdown.sessions || 0) / total) * 100;
@@ -177,6 +180,7 @@ export default function MRR() {
             const fymbleNet = breakdown.fittbot_subscription || 0;
             const aiCreditsNet = breakdown.ai_credits || 0;
             const aiDietCoachNet = breakdown.ai_diet_coach || 0;
+            const kyraAiNet = breakdown.kyra_ai || 0;
             const otherNet = fymbleNet + aiCreditsNet + aiDietCoachNet;
             const otherPercent = fittbotPercent + aiCreditsPercent + aiDietCoachPercent;
 
@@ -205,6 +209,13 @@ export default function MRR() {
                   color: '#ec4899',
                 },
                 {
+                  id: 'kyraAi',
+                  name: 'Kyra AI',
+                  value: kyraAiNet,
+                  percent: kyraAiPercent,
+                  color: '#a855f7',
+                },
+                {
                   id: 'gym',
                   name: 'Gym Membership',
                   value: breakdown.gym_membership || 0,
@@ -229,13 +240,6 @@ export default function MRR() {
             } else {
               segments = [
                 {
-                  id: 'other',
-                  name: 'Other Categories',
-                  value: otherNet,
-                  percent: otherPercent,
-                  color: '#FFC107',
-                },
-                {
                   id: 'gym',
                   name: 'Gym Membership',
                   value: breakdown.gym_membership || 0,
@@ -255,6 +259,20 @@ export default function MRR() {
                   value: breakdown.sessions || 0,
                   percent: sessionsPercent,
                   color: '#fbbf24',
+                },
+                {
+                  id: 'kyraAi',
+                  name: 'Kyra AI',
+                  value: kyraAiNet,
+                  percent: kyraAiPercent,
+                  color: '#a855f7',
+                },
+                {
+                  id: 'other',
+                  name: 'Other Categories',
+                  value: otherNet,
+                  percent: otherPercent,
+                  color: '#FFC107',
                 }
               ];
             }

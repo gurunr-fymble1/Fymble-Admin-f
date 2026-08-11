@@ -688,7 +688,8 @@ export default function UnitEconomicsPage() {
                       (gmvData.nutrition_plan?.total_revenue || 0) +
                       (gmvData.gym_membership?.total_revenue || 0) +
                       (gmvData.ai_credits?.total_revenue || 0) +
-                      (gmvData.ai_diet_coach?.total_revenue || 0);
+                      (gmvData.ai_diet_coach?.total_revenue || 0) +
+                      (gmvData.kyra_ai?.total_revenue || 0);
 
                     return (
                       <>
@@ -724,7 +725,8 @@ export default function UnitEconomicsPage() {
                       (gmvData.nutrition_plan?.total_revenue || 0) +
                       (gmvData.gym_membership?.total_revenue || 0) +
                       (gmvData.ai_credits?.total_revenue || 0) +
-                      (gmvData.ai_diet_coach?.total_revenue || 0);
+                      (gmvData.ai_diet_coach?.total_revenue || 0) +
+                      (gmvData.kyra_ai?.total_revenue || 0);
                     // Use authoritative totalBookings from backend (same source as Users Stats page)
                     const totalBookings =
                       unitEconomicsData.totalBookings !== undefined
@@ -734,7 +736,8 @@ export default function UnitEconomicsPage() {
                           (gmvData.nutrition_plan?.count || 0) +
                           (gmvData.gym_membership?.count || 0) +
                           (gmvData.ai_credits?.count || 0) +
-                          (gmvData.ai_diet_coach?.count || 0);
+                          (gmvData.ai_diet_coach?.count || 0) +
+                          (gmvData.kyra_ai?.count || 0);
                     const revenuePerBooking = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
                     return (

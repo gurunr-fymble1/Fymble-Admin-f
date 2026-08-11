@@ -248,6 +248,13 @@ export default function AllPurchases() {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
+
+    const hasTime =
+    typeof dateString === "string" &&
+    (dateString.includes("T") || dateString.includes(" "));
+
+   // Date + Time
+  if (hasTime) {
     return date.toLocaleString("en-IN", {
       day: "2-digit",
       month: "short",
@@ -256,6 +263,22 @@ export default function AllPurchases() {
       minute: "2-digit",
       hour12: true,
     });
+  }
+
+  // Date only
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  };
+
+  const isDifferentDay = (dateStr1, dateStr2) => {
+    if (!dateStr1 || !dateStr2) return false;
+    const d1 = new Date(dateStr1);
+    const d2 = new Date(dateStr2);
+    if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return false;
+    return d1.toDateString() !== d2.toDateString();
   };
 
   const getLatestScannedDate = (purchase) => {
@@ -800,11 +823,12 @@ export default function AllPurchases() {
                 <th>Purchased At</th>
                 <th>Scanned Date</th>
                 <th style={{ width: "140px" }}>Status</th>
+                <th style={{ width: "180px" }}>Pricing Slab</th>
                 <th>Platform</th>
               </tr>
             </thead>
             <tbody>
-               {purchases.map((purchase) => {
+              {purchases.map((purchase, index) => {
                 const isSession = purchase.type === "Session";
                 const hasSchedule = isSession
                   ? (purchase.session_schedule?.length > 0 || purchase.scheduled_days_detailed?.length > 0 || purchase.scheduled_date?.length > 0)
@@ -817,6 +841,9 @@ export default function AllPurchases() {
                     ? (purchase.pack_size === 5 || purchase.pack_size === 10)
                     : (purchase.pack_size === 7 || purchase.pack_size === 14)
                 );
+
+                const nextPurchase = purchases[index + 1];
+                const isDayChanged = nextPurchase && isDifferentDay(purchase.purchased_at, nextPurchase.purchased_at);
 
                 const typeLabel = purchase.type === "Session" 
                   ? (Number(purchase.session_id) === 2
@@ -944,6 +971,54 @@ export default function AllPurchases() {
                             </span>
                           )}
                         </div>
+                      </td> 
+                      <td className="pricing-slab">
+                        {typeof purchase.pricing_slab === "object" && purchase.pricing_slab !== null && ((purchase.owner_amount || purchase.discount_price)/(purchase.head_count * purchase.days_total) <= purchase.pricing_slab.owner_gets) ? (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "11px", textAlign: "left" }}>
+                            {purchase.pricing_slab.actual_price !== undefined && purchase.pricing_slab.actual_price !== null && (
+                              <div>
+                                <span style={{ color: "#888" }}>Actual: </span>
+                                <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.actual_price}</span>
+                              </div>
+                            )}
+                            {purchase.pricing_slab.owner_gets !== undefined && purchase.pricing_slab.owner_gets !== null && (
+                              <div>
+                                <span style={{ color: "#888" }}>Owner: </span>
+                                <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.owner_gets}</span>
+                              </div>
+                            )}
+                            {purchase.pricing_slab.owner_monthly_equity !== undefined && purchase.pricing_slab.owner_monthly_equity !== null && (
+                              <div>
+                                <span style={{ color: "#888" }}>Equity: </span>
+                                <span style={{ color: "#fff" }}>
+                                  ₹{purchase.pricing_slab.owner_monthly_equity}
+                                  {purchase.pricing_slab.percent !== undefined && purchase.pricing_slab.percent !== null && (
+                                    <span
+                                      style={{
+                                        marginLeft: "2px",
+                                        color: purchase.pricing_slab.percent > 0 
+                                          ? "#4ade80" 
+                                          : purchase.pricing_slab.percent < 0 
+                                            ? "#ef4444" 
+                                            : "#888",
+                                      }}
+                                    >
+                                      
+                                      <span style={{ fontWeight: "600", fontSize: "10px" }}>
+                                        {purchase.pricing_slab.percent > 0 ? "↑" : purchase.pricing_slab.percent < 0 ? "↓" : ""}
+                                      </span>
+                                      <span style={{ fontSize: "10px", fontWeight: "600", marginLeft: "1px" }}>
+                                        {Math.abs(purchase.pricing_slab.percent)}%
+                                      </span>
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          typeof purchase.pricing_slab === "object" ? "-" : (purchase.pricing_slab || "-")
+                        )}
                       </td>
                       <td className="platform">
                         <span
@@ -965,7 +1040,7 @@ export default function AllPurchases() {
                     </tr>
                     {isExpanded && (
                       <tr className="schedule-row">
-                        <td colSpan="12" style={{ padding: "0 !important" }}>
+                        <td colSpan="13" style={{ padding: "0 !important" }}>
                           <div
                             style={{
                               backgroundColor: "#151515",
@@ -1082,6 +1157,12 @@ export default function AllPurchases() {
                             )}
                             {(purchase.gym_contact || purchase.owner_contact || purchase.client_contact || purchase.gym_area || purchase.owner_name) && (
                               <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+                                {purchase.pack_size > 1 && (
+                                  <div style={{ fontSize: "13px" }}>
+                                    <span style={{ color: "#888" }}>Valid Until: </span>
+                                    <span style={{ color: "#fff", fontWeight: "500" }}>{formatDate(purchase.valid_until)}</span>
+                                  </div>
+                                )}
                                 {purchase.owner_name && (
                                   <div style={{ fontSize: "13px" }}>
                                     <span style={{ color: "#888" }}>Owner Name: </span>
@@ -1121,6 +1202,19 @@ export default function AllPurchases() {
                               </div>
                             )}
                           </div>
+                        </td>
+                      </tr>
+                    )}
+                    {isDayChanged && (
+                      <tr>
+                        <td colSpan="14" style={{ padding: "0" }}>
+                          <div
+                            style={{
+                              borderTop: "2px dashed #FF5757",
+                              margin: "1px 1px",
+                              opacity: 0.5,
+                            }}
+                          />
                         </td>
                       </tr>
                     )}
@@ -1374,9 +1468,17 @@ export default function AllPurchases() {
           color: #4ade80 !important;
         }
 
+        table.purchases-table .pricing-slab {
+          font-size: 13px !important;
+          color: #ccc !important;
+          text-transform: capitalize;
+          min-width: 160px !important;
+          width: 180px !important;
+        }
+
         table.purchases-table .purchased-at,
         table.purchases-table .scanned-date {
-          font-size: 14px !important;
+          font-size: 12px !important;
           color: #888 !important;
         }
 

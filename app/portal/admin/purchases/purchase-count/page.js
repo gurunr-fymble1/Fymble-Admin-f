@@ -215,7 +215,7 @@ export default function PurchaseCountPage() {
         ["Filters Applied"],
         ["Start Date", formatDate(purchaseData.filters.startDate)],
         ["End Date", formatDate(purchaseData.filters.endDate)],
-        ["Source", purchaseData.filters.source === "all" ? "All Sources" : purchaseData.filters.source],
+        ["Source", purchaseData.filters.source === "all" ? "All Sources" : (sourceLabels[purchaseData.filters.source] || purchaseData.filters.source)],
         ["Gym", purchaseData.filters.gymId === "all" ? "All Gyms" : purchaseData.filters.gymId],
         [""],
         ["Total Purchases"],
@@ -257,6 +257,7 @@ export default function PurchaseCountPage() {
     daily_pass: "Daily Pass",
     sessions: "Fitness Classes",
     gym_membership: "Gym Membership",
+    kyra_ai: "Kyra AI",
     other: "Other Categories",
     fittbot_subscription: "Nutrition Plan",
     ai_credits: "AI Credits",
@@ -267,6 +268,7 @@ export default function PurchaseCountPage() {
     daily_pass: "#ffffffff",
     sessions: "#4CAF50",
     gym_membership: "#2196F3",
+    kyra_ai: "#a855f7",
     other: "#FFC107",
     fittbot_subscription: "#FFC107", // Yellow
     ai_credits: "#FF9800", // Orange
@@ -517,6 +519,7 @@ export default function PurchaseCountPage() {
               <option value="daily_pass">Daily Pass</option>
               <option value="sessions">Fitness Classes</option>
               <option value="gym_membership">Gym Membership</option>
+              <option value="kyra_ai">Kyra AI</option>
               <option value="other">Other Categories</option>
             </select>
           </div>
