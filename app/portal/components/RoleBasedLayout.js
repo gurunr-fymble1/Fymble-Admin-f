@@ -432,6 +432,25 @@ export default function RoleBasedLayout({ children }) {
           },
         ];
 
+      case "accountant":
+        return [
+          {
+            name: "Summary",
+            icon: SummaryIcon,
+            path: "/portal/admin/home",
+          },
+          {
+            name: "Bookings",
+            icon: BookingsIcon,
+            path: "/portal/admin/purchases",
+          },
+          {
+            name: "Strategic Insights",
+            icon: StrategicInsightsIcon,
+            path: "/portal/admin/financials",
+          },
+        ];
+
       default:
         return [];
     }
@@ -470,6 +489,14 @@ export default function RoleBasedLayout({ children }) {
           dashboardType: "Nutritionist dashboard",
           profilePath: "/portal/nutritionist/profile",
         };
+      case "accountant":
+        return {
+          name: userName,
+          title: "Accountant",
+          dashboardType: "Accountant dashboard",
+          profilePath: "/portal/admin/home",
+        };
+
       default:
         return {
           name: userName,
@@ -484,6 +511,18 @@ export default function RoleBasedLayout({ children }) {
   const hasAccess = (userRole, pathname) => {
     const roleRoutes = {
       admin: ["/portal/admin"],
+      accountant: [
+        "/portal/admin/home",
+        "/portal/admin/purchases",
+        "/portal/admin/financials",
+        "/portal/admin/users-stats",
+        "/portal/admin/gyms",
+        "/portal/admin/unit-economics",
+        "/portal/admin/expenses",
+        "/portal/admin/cash-flow",
+        "/portal/admin/tax-compliance",
+        "/portal/admin/mrr"
+      ],
       support: ["/portal/support", "/portal/admin/gymplans", "/portal/admin/gymphotos", "/portal/admin/gymdetails", 
         "/portal/admin/verified-gyms", "/portal/admin/unverified-gyms", "/portal/admin/unverified-splitup", "/portal/admin/purchases", 
         "/portal/admin/tracking", "/portal/admin/payment-data", "/portal/admin/kyra"],
@@ -538,7 +577,7 @@ export default function RoleBasedLayout({ children }) {
             You don&rsquo;t have permission to view this page.
           </p>
           <button
-            onClick={() => router.push(`/portal/${role}/home`)}
+            onClick={() => router.push(role === "accountant" ? "/portal/admin/home" : `/portal/${role}/home`)}
             style={{
               backgroundColor: themeColor,
               color: "white",
@@ -672,7 +711,7 @@ export default function RoleBasedLayout({ children }) {
             <div
               style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
             >
-              {role === "admin" || role === "support" ? (
+              {role === "admin" || role === "support" || role === "accountant" ? (
                 <img 
                   src="/Fymble.png" 
                   alt="Fymble" 
@@ -771,7 +810,9 @@ export default function RoleBasedLayout({ children }) {
                       paddingLeft: sidebarCollapsed ? "0" : "12px",
                       borderLeft: sidebarCollapsed ? "none" : (role === "nutritionist" ? "1px solid #e5e7eb" : "1px solid #374151"),
                     }}>
-                      {strategicInsightsItems.map((subItem) => {
+                      {strategicInsightsItems
+                        .filter((subItem) => hasAccess(role, subItem.path))
+                        .map((subItem) => {
                         const subActive = isActive(subItem.path);
                         const SubIconComponent = subItem.icon;
 

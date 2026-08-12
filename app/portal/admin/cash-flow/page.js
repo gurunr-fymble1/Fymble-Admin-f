@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
+import { useRole } from "../../layout";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
 
 export default function CashFlowPage() {
+  const { role } = useRole();
   const { handleExportTrigger, secureExportProps } = useSecureExport();
 
   // Check if we're viewing a specific month (from URL query param)
@@ -276,47 +278,51 @@ export default function CashFlowPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#22c55e",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-              transition: "background-color 0.2s"
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
-          >
-            Export
-          </button>
-          <button
-            onClick={() => setShowOpeningBalanceModal(true)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#FF5757",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-              transition: "background-color 0.2s"
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "#e04848"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "#FF5757"}
-          >
-            + Opening Balance
-          </button>
+          {role === "admin" && (
+            <>
+              <button
+                onClick={() => setShowExportModal(true)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#22c55e",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s"
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
+                onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
+              >
+                Export
+              </button>
+              <button
+                onClick={() => setShowOpeningBalanceModal(true)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#FF5757",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s"
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = "#e04848"}
+                onMouseLeave={(e) => e.target.style.backgroundColor = "#FF5757"}
+              >
+                + Opening Balance
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       {/* Opening Balance List */}
-      {openingBalances.length > 0 && (
+      {role === "admin" && openingBalances.length > 0 && (
         <div className="dashboard-card" style={{ marginBottom: "20px" }}>
           <div className="card-header-custom">
             <h6 className="card-title">Opening Balances</h6>

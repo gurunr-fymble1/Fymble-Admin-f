@@ -41,8 +41,8 @@ export default function AdminLogin() {
 
         const user = JSON.parse(userData);
 
-        // Check if role is admin
-        if (user.role !== "admin") {
+        // Check if role is allowed
+        if (user.role !== "admin" && user.role !== "accountant" && user.role !== "support" && user.role !== "nutritionist") {
           localStorage.removeItem("user");
           setCheckingAuth(false);
           return;
@@ -53,7 +53,7 @@ export default function AdminLogin() {
 
         if (verifyResponse && verifyResponse.status === 200) {
           // Token is valid, redirect to admin portal
-          if (user.role === "admin") {
+          if (user.role === "admin" || user.role === "accountant") {
             router.push("/portal/admin/home");
           } else if (user.role === "support") {
             router.push("/portal/support/home");
@@ -113,6 +113,8 @@ export default function AdminLogin() {
             router.push("/portal/support/home");
           } else if (response.data.data.role === "nutritionist") {
             router.push("/portal/nutritionist/home");
+          } else if (response.data.data.role === "accountant") {
+            router.push("/portal/admin/home");
           } else {
             setError("Only nutritionists are allowed to access this portal");
             localStorage.removeItem("user");
@@ -216,6 +218,8 @@ export default function AdminLogin() {
             router.push("/portal/admin/home");
           } else if (response.data.data.role === "support") {
             router.push("/portal/support/fittbotbusiness");
+          } else if (response.data.data.role === "accountant") {
+            router.push("/portal/admin/home");
           }
         }
       } catch (err) {
@@ -247,6 +251,8 @@ export default function AdminLogin() {
             router.push("/portal/admin/home");
           } else if (response.data.data.role === "support") {
             router.push("/portal/support/fittbotbusiness");
+          } else if (response.data.data.role === "accountant") {
+            router.push("/portal/admin/home");
           }
         }
       } catch (err) {

@@ -230,6 +230,22 @@ export default function KyraPageStandalone() {
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [expandedRowTabs, setExpandedRowTabs] = useState({});
   const [chatHistories, setChatHistories] = useState({});
+
+  const EXCLUDED_CONTACTS = useMemo(() => [
+    "7373675762",
+    "9486987082",
+    "8667458723",
+    "9840633149",
+    "8667427956",
+    "8667488723",
+    "7975847236"
+  ], []);
+
+  const filteredUsers = useMemo(() => {
+    return usersData.filter(user => {
+      return !EXCLUDED_CONTACTS.includes(user.client?.contact);
+    });
+  }, [usersData, EXCLUDED_CONTACTS]);
   // Parse tab parameter from URL search query on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -905,7 +921,7 @@ export default function KyraPageStandalone() {
               boxShadow: activeTab === "users" ? "0 4px 15px rgba(255, 87, 87, 0.3)" : "none"
             }}
           >
-            Kyra Users ({usersData.length})
+            Kyra Users ({filteredUsers.length})
           </button>
         </div>
 

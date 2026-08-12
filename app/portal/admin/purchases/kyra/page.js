@@ -74,14 +74,6 @@ export default function KyraPage() {
     });
   };
 
-  // Helper: Format Product ID
-  const formatProductId = (prodId) => {
-    if (!prodId) return "N/A";
-    if (prodId === "kyra_ai_premium:kyra-ai-premium") {
-      return "Kyra AI Premium";
-    }
-    return prodId.replace("kyra_ai_premium:", "");
-  };
 
   // Helper: Expiry/Days Remaining display
   const getExpiryDisplay = (activeUntilStr) => {
@@ -91,13 +83,13 @@ export default function KyraPage() {
 
     const now = new Date();
     if (now > activeUntil) {
-      return <span style={{ color: "#ef4444" }}>0 days left</span>;
+      return <span style={{ color: "#ffffffff" }}>0 days left</span>;
     }
 
     const diffTime = activeUntil - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays <= 5) {
+    if (diffDays < 10) {
       return <span style={{ color: "#f59e0b" }}>Expires in {diffDays}d</span>;
     }
     return <span style={{ color: "#10b981" }}>{diffDays} days left</span>;
@@ -131,7 +123,10 @@ export default function KyraPage() {
           return status === "active" || status === "renewed";
         }
         if (statusFilter === "expired") {
-          return status === "expired" || status === "canceled";
+          return status === "expired";
+        }
+        if (statusFilter === "canceled") {
+          return status === "canceled";
         }
         return status === statusFilter;
       });
@@ -253,10 +248,10 @@ export default function KyraPage() {
     if (status === "active" || status === "renewed") {
       color = "#4ade80";
       bgColor = "rgba(74, 222, 128, 0.15)";
-    } else if (status === "trial") {
-      color = "#f59e0b";
+    } else if (status === "expired") {
+      color = "#f79c00ff";
       bgColor = "rgba(245, 158, 11, 0.15)";
-    } else if (["canceled", "expired", "revoked", "refunded"].includes(status)) {
+    } else if (["canceled"].includes(status)) {
       color = "#ef4444";
       bgColor = "rgba(239, 68, 68, 0.15)";
     }
@@ -329,6 +324,7 @@ export default function KyraPage() {
           <option value="all">All Statuses</option>
           <option value="active">Active</option>
           <option value="expired">Expired</option>
+          <option value="canceled">Canceled</option>
         </select>
 
         {/* Spacer */}

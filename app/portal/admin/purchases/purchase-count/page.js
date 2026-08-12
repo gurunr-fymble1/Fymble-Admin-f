@@ -3,8 +3,10 @@ import { useState, useEffect, useMemo } from "react";
 import axiosInstance from "@/lib/axios";
 import * as XLSX from "xlsx";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { useRole } from "../../../layout";
 
 export default function PurchaseCountPage() {
+  const { role } = useRole();
   const { handleExportTrigger, secureExportProps } = useSecureExport();
   const [loading, setLoading] = useState(true);
   const [purchaseData, setPurchaseData] = useState(null);
@@ -297,7 +299,7 @@ export default function PurchaseCountPage() {
             Track and analyze all purchases across categories
           </p>
         </div>
-        {!loading && purchaseData && (
+        {!loading && purchaseData && (role === "admin" || role === "support") && (
           <button
             onClick={handleExport}
             style={{

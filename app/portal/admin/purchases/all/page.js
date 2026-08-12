@@ -3,8 +3,10 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import axiosInstance from "@/lib/axios";
 import { FaDownload } from "react-icons/fa";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { useRole } from "../../../layout";
 
 export default function AllPurchases() {
+  const { role } = useRole();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [purchases, setPurchases] = useState([]);
@@ -647,24 +649,26 @@ export default function AllPurchases() {
           </div>
 
           {/* Export Button */}
-          <button
-            className="btn"
-            onClick={handleExport}
-            disabled={exporting || loading}
-            style={{
-              backgroundColor: exporting || loading ? "#444" : "#28a745",
-              border: "none",
-              color: "#fff",
-              padding: "8px 16px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: exporting || loading ? "not-allowed" : "pointer",
-            }}
-          >
-            <FaDownload />
-            {exporting ? "Exporting..." : "Export Excel"}
-          </button>
+          {(role === "admin" || role === "support") && (
+            <button
+              className="btn"
+              onClick={handleExport}
+              disabled={exporting || loading}
+              style={{
+                backgroundColor: exporting || loading ? "#444" : "#28a745",
+                border: "none",
+                color: "#fff",
+                padding: "8px 16px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: exporting || loading ? "not-allowed" : "pointer",
+              }}
+            >
+              <FaDownload />
+              {exporting ? "Exporting..." : "Export Excel"}
+            </button>
+          )}
         </div>
 
         {/* Second Row: Date Filters, Distinct Filters */}

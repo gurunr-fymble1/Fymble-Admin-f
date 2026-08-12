@@ -4,8 +4,10 @@ import axiosInstance from "@/lib/axios";
 import { FaDownload } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { useRole } from "../../../layout";
 
 export default function ClientPurchaseCountPage() {
+  const { role } = useRole();
   const router = useRouter();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -161,29 +163,31 @@ export default function ClientPurchaseCountPage() {
               }}
             />
           </div>
-          <button
-            onClick={handleExport}
-            disabled={exporting || loading}
-            style={{
-              backgroundColor: exporting || loading ? "#444" : "#28a745",
-              border: "none",
-              color: "#fff",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: exporting || loading ? "not-allowed" : "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-              transition: "background-color 0.2s"
-            }}
-            onMouseEnter={(e) => { if(!exporting && !loading) e.target.style.backgroundColor = "#218838"}}
-            onMouseLeave={(e) => { if(!exporting && !loading) e.target.style.backgroundColor = "#28a745"}}
-          >
-            <FaDownload />
-            {exporting ? "Exporting..." : "Export Excel"}
-          </button>
+          {(role === "admin" || role === "support") && (
+            <button
+              onClick={handleExport}
+              disabled={exporting || loading}
+              style={{
+                backgroundColor: exporting || loading ? "#444" : "#28a745",
+                border: "none",
+                color: "#fff",
+                padding: "8px 16px",
+                borderRadius: "6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: exporting || loading ? "not-allowed" : "pointer",
+                fontSize: "14px",
+                fontWeight: "500",
+                transition: "background-color 0.2s"
+              }}
+              onMouseEnter={(e) => { if(!exporting && !loading) e.target.style.backgroundColor = "#218838"}}
+              onMouseLeave={(e) => { if(!exporting && !loading) e.target.style.backgroundColor = "#28a745"}}
+            >
+              <FaDownload />
+              {exporting ? "Exporting..." : "Export Excel"}
+            </button>
+          )}
         </div>
       </div>
 

@@ -2,10 +2,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
+import { useRole } from "../../layout";
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineSearch, HiOutlineFilter, HiOutlineChevronDown, HiOutlineChevronUp } from "react-icons/hi";
 
 export default function ExpensesPage() {
   const router = useRouter();
+  const { role } = useRole();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [dateFilter, setDateFilter] = useState("");
@@ -370,24 +372,26 @@ export default function ExpensesPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <button
-            onClick={() => {
-              setEditingExpense(null);
-              setFormData({
-                category: activeTab,
-                expense_type: "",
-                amount: "",
-                expense_date: new Date().toISOString().split('T')[0],
-                description: ""
-              });
-              setIsCustomType(false);
-              setShowAddForm(!showAddForm);
-            }}
-            style={buttonStyle}
-          >
-            <HiOutlinePlus size={18} />
-            {showAddForm ? "Cancel" : "Add Expense"}
-          </button>
+          {role === "admin" && (
+            <button
+              onClick={() => {
+                setEditingExpense(null);
+                setFormData({
+                  category: activeTab,
+                  expense_type: "",
+                  amount: "",
+                  expense_date: new Date().toISOString().split('T')[0],
+                  description: ""
+                });
+                setIsCustomType(false);
+                setShowAddForm(!showAddForm);
+              }}
+              style={buttonStyle}
+            >
+              <HiOutlinePlus size={18} />
+              {showAddForm ? "Cancel" : "Add Expense"}
+            </button>
+          )}
           <button
             onClick={() => setShowFilters(!showFilters)}
             style={{
@@ -742,24 +746,26 @@ export default function ExpensesPage() {
           </button>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <button
-            onClick={() => {
-              setEditingExpense(null);
-              setFormData({
-                category: activeTab,
-                expense_type: "",
-                amount: "",
-                expense_date: new Date().toISOString().split('T')[0],
-                description: ""
-              });
-              setIsCustomType(false);
-              setShowAddForm(!showAddForm);
-            }}
-            style={{ ...buttonStyle, padding: "0.5rem" }}
-            title={showAddForm ? "Cancel" : "Add Expense"}
-          >
-            <HiOutlinePlus size={18} style={{ transform: showAddForm ? "rotate(45deg)" : "none", transition: "transform 0.2s" }} />
-          </button>
+          {role === "admin" && (
+            <button
+              onClick={() => {
+                setEditingExpense(null);
+                setFormData({
+                  category: activeTab,
+                  expense_type: "",
+                  amount: "",
+                  expense_date: new Date().toISOString().split('T')[0],
+                  description: ""
+                });
+                setIsCustomType(false);
+                setShowAddForm(!showAddForm);
+              }}
+              style={{ ...buttonStyle, padding: "0.5rem" }}
+              title={showAddForm ? "Cancel" : "Add Expense"}
+            >
+              <HiOutlinePlus size={18} style={{ transform: showAddForm ? "rotate(45deg)" : "none", transition: "transform 0.2s" }} />
+            </button>
+          )}
           <button
             onClick={() => setShowFilters(!showFilters)}
             style={{
@@ -797,7 +803,7 @@ export default function ExpensesPage() {
       </div>
 
       {/* Add/Edit Form */}
-      {showAddForm && (
+      {role === "admin" && showAddForm && (
         <div style={cardStyle}>
           <h3 style={{ color: "white", fontSize: "1.125rem", fontWeight: "600", margin: "0 0 1rem 0" }}>
             {editingExpense ? "Edit Expense" : "Add New Expense"}
@@ -1268,7 +1274,7 @@ export default function ExpensesPage() {
                     <th style={tableHeaderStyle}>Type</th>
                     <th style={tableHeaderStyle}>Description</th>
                     <th style={{ ...tableHeaderStyle, textAlign: "right" }}>Amount</th>
-                    <th style={tableHeaderStyle}>Actions</th>
+                    {role === "admin" && <th style={tableHeaderStyle}>Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -1296,44 +1302,46 @@ export default function ExpensesPage() {
                       <td style={{ ...tableCellStyle, textAlign: "right", fontWeight: "600" }}>
                         ₹{parseFloat(expense.amount).toFixed(2)}
                       </td>
-                      <td style={tableCellStyle}>
-                        <div style={{ display: "flex", gap: "0.5rem" }}>
-                          <button
-                            onClick={() => handleEdit(expense)}
-                            style={{
-                              backgroundColor: "transparent",
-                              border: "1px solid #374151",
-                              color: "#9ca3af",
-                              padding: "0.25rem 0.5rem",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              display: "inline-flex",
-                              alignItems: "center"
-                            }}
-                            onMouseEnter={(e) => { e.target.style.backgroundColor = "#374151"; e.target.style.color = "white"; }}
-                            onMouseLeave={(e) => { e.target.style.backgroundColor = "transparent"; e.target.style.color = "#9ca3af"; }}
-                          >
-                            <HiOutlinePencil size={14} />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(expense.id)}
-                            style={{
-                              backgroundColor: "transparent",
-                              border: "1px solid #374151",
-                              color: "#ef4444",
-                              padding: "0.25rem 0.5rem",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                              display: "inline-flex",
-                              alignItems: "center"
-                            }}
-                            onMouseEnter={(e) => { e.target.style.backgroundColor = "#374151"; }}
-                            onMouseLeave={(e) => { e.target.style.backgroundColor = "transparent"; }}
-                          >
-                            <HiOutlineTrash size={14} />
-                          </button>
-                        </div>
-                      </td>
+                      {role === "admin" && (
+                        <td style={tableCellStyle}>
+                          <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <button
+                              onClick={() => handleEdit(expense)}
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "1px solid #374151",
+                                color: "#9ca3af",
+                                padding: "0.25rem 0.5rem",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center"
+                              }}
+                              onMouseEnter={(e) => { e.target.style.backgroundColor = "#374151"; e.target.style.color = "white"; }}
+                              onMouseLeave={(e) => { e.target.style.backgroundColor = "transparent"; e.target.style.color = "#9ca3af"; }}
+                            >
+                              <HiOutlinePencil size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(expense.id)}
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "1px solid #374151",
+                                color: "#ef4444",
+                                padding: "0.25rem 0.5rem",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center"
+                              }}
+                              onMouseEnter={(e) => { e.target.style.backgroundColor = "#374151"; }}
+                              onMouseLeave={(e) => { e.target.style.backgroundColor = "transparent"; }}
+                            >
+                              <HiOutlineTrash size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

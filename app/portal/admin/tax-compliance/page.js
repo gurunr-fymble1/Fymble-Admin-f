@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { useRole } from "../../layout";
 
 export default function TaxCompliancePage() {
+  const { role } = useRole();
   const { handleExportTrigger, secureExportProps } = useSecureExport();
   const [loading, setLoading] = useState(true);
   const [taxData, setTaxData] = useState([]);
@@ -209,24 +211,26 @@ export default function TaxCompliancePage() {
           <div className="dashboard-card">
             <div className="card-header-custom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h6 className="card-title">Tax & Compliance - Monthly Overview</h6>
-              <button
-                onClick={() => setShowExportModal(true)}
-                style={{
-                  padding: "8px 16px",
-                  backgroundColor: "#22c55e",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
-              >
-                Export
-              </button>
+              {role === "admin" && (
+                <button
+                  onClick={() => setShowExportModal(true)}
+                  style={{
+                    padding: "8px 16px",
+                    backgroundColor: "#22c55e",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
+                >
+                  Export
+                </button>
+              )}
             </div>
             <div className="card-body-custom">
               <div style={{ overflowX: "auto" }}>
@@ -303,15 +307,17 @@ export default function TaxCompliancePage() {
                         textTransform: "uppercase",
                         letterSpacing: "0.05em"
                       }}>TDS Payable</th>
-                      <th style={{
-                        padding: "12px 16px",
-                        textAlign: "center",
-                        color: "#9ca3af",
-                        fontWeight: "600",
-                        fontSize: "0.75rem",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em"
-                      }}>Actions</th>
+                      {role === "admin" && (
+                        <th style={{
+                          padding: "12px 16px",
+                          textAlign: "center",
+                          color: "#9ca3af",
+                          fontWeight: "600",
+                          fontSize: "0.75rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.05em"
+                        }}>Actions</th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -431,63 +437,65 @@ export default function TaxCompliancePage() {
                         </td>
 
                         {/* Actions */}
-                        <td style={{
-                          padding: "16px",
-                          textAlign: "center"
-                        }}>
-                          {editingMonth === item.month ? (
-                            <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                        {role === "admin" && (
+                          <td style={{
+                            padding: "16px",
+                            textAlign: "center"
+                          }}>
+                            {editingMonth === item.month ? (
+                              <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                                <button
+                                  onClick={handleSave}
+                                  disabled={saving}
+                                  style={{
+                                    backgroundColor: saving ? "#4b5563" : "#22c55e",
+                                    color: "white",
+                                    border: "none",
+                                    padding: "6px 12px",
+                                    borderRadius: "4px",
+                                    cursor: saving ? "not-allowed" : "pointer",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "500"
+                                  }}
+                                >
+                                  {saving ? "Saving..." : "Save"}
+                                </button>
+                                <button
+                                  onClick={handleCancel}
+                                  disabled={saving}
+                                  style={{
+                                    backgroundColor: "#374151",
+                                    color: "#9ca3af",
+                                    border: "1px solid #4b5563",
+                                    padding: "6px 12px",
+                                    borderRadius: "4px",
+                                    cursor: saving ? "not-allowed" : "pointer",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "500"
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
                               <button
-                                onClick={handleSave}
-                                disabled={saving}
+                                onClick={() => handleEdit(item)}
                                 style={{
-                                  backgroundColor: saving ? "#4b5563" : "#22c55e",
+                                  backgroundColor: "#3b82f6",
                                   color: "white",
                                   border: "none",
                                   padding: "6px 12px",
                                   borderRadius: "4px",
-                                  cursor: saving ? "not-allowed" : "pointer",
+                                  cursor: "pointer",
                                   fontSize: "0.75rem",
                                   fontWeight: "500"
                                 }}
                               >
-                                {saving ? "Saving..." : "Save"}
+                                Edit
                               </button>
-                              <button
-                                onClick={handleCancel}
-                                disabled={saving}
-                                style={{
-                                  backgroundColor: "#374151",
-                                  color: "#9ca3af",
-                                  border: "1px solid #4b5563",
-                                  padding: "6px 12px",
-                                  borderRadius: "4px",
-                                  cursor: saving ? "not-allowed" : "pointer",
-                                  fontSize: "0.75rem",
-                                  fontWeight: "500"
-                                }}
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => handleEdit(item)}
-                              style={{
-                                backgroundColor: "#3b82f6",
-                                color: "white",
-                                border: "none",
-                                padding: "6px 12px",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "0.75rem",
-                                fontWeight: "500"
-                              }}
-                            >
-                              Edit
-                            </button>
-                          )}
-                        </td>
+                            )}
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>

@@ -6,7 +6,35 @@ import axiosInstance from "@/lib/axios";
 import { FaTag, FaCalendarCheck } from "react-icons/fa";
 
 export default function Home() {
-  const router = useRouter();
+  const baseRouter = useRouter();
+  const { role } = useRole();
+
+  const router = {
+    ...baseRouter,
+    push: (path) => {
+      if (role === "accountant") {
+        const allowedPaths = [
+          "/portal/admin/home",
+          "/portal/admin/purchases",
+          "/portal/admin/financials",
+          "/portal/admin/users-stats",
+          "/portal/admin/gyms",
+          "/portal/admin/unit-economics",
+          "/portal/admin/expenses",
+          "/portal/admin/cash-flow",
+          "/portal/admin/tax-compliance",
+          "/portal/admin/mrr"
+        ];
+        const isAllowed = allowedPaths.some(allowedPath => path.startsWith(allowedPath));
+        if (!isAllowed) {
+          alert("You don't have access or permission");
+          return;
+        }
+      }
+      baseRouter.push(path);
+    }
+  };
+
   const [fittbotTotalUsersFilter, setFittbotTotalUsersFilter] =
     useState("overall");
   const [fittbotRevenueFilter, setFittbotRevenueFilter] = useState("overall");
@@ -15,7 +43,6 @@ export default function Home() {
   const [businessGymOwnersFilter, setBusinessGymOwnersFilter] =
     useState("month");
   const [businessGymsFilter, setBusinessGymsFilter] = useState("month");
-  const { role } = useRole();
 
   // Custom filter types: "date", "month", "year" for home page date filters
   const [customType, setCustomType] = useState("date");
@@ -173,9 +200,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchPriceChangeNotifications();
-    fetchBookingNotifications();
-  }, []);
+    if (role === "admin" || role === "support") {
+      fetchPriceChangeNotifications();
+      fetchBookingNotifications();
+    }
+  }, [role]);
 
   const fetchPriceChangeNotifications = async () => {
     try {
