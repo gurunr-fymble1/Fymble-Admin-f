@@ -9,6 +9,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function RewardParticipants() {
   const router = useRouter();
@@ -313,7 +314,7 @@ export default function RewardParticipants() {
                     </td>
                     <td>{participant.email || "-"}</td>
                     <td>{participant.contact || "-"}</td>
-                    <td>{participant.gym_name || "-"}</td>
+                    <td>{formatGymName(participant.gym_name) || "-"}</td>
                     <td>{formatDateTime(participant.opt_in_date)}</td>
                   </tr>
                 ))

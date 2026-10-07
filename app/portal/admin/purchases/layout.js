@@ -5,6 +5,7 @@ import { useRole } from "../../layout";
 import BookingAverages from "./components/BookingAverages";
 import axiosInstance from "@/lib/axios";
 import { FaTag, FaCalendarCheck } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function PurchasesLayout({ children }) {
   const router = useRouter();
@@ -25,6 +26,11 @@ export default function PurchasesLayout({ children }) {
         return {
           backgroundColor: "rgba(168, 85, 247, 0.15)", // purple
           color: "#c084fc",
+        };
+      case "Weekly Pass":
+        return {
+          backgroundColor: "rgba(16, 185, 129, 0.15)", // green
+          color: "#34d399",
         };
       case "Nutrition Plan":
         return {
@@ -142,7 +148,7 @@ export default function PurchasesLayout({ children }) {
     // { id: "ai-diet-coach", name: "AI Diet Coach", path: "/portal/admin/purchases/ai-diet-coach" },
     { id: "today", name: "Today's Schedule", path: "/portal/admin/purchases/today" },
     { id: "client-purchase-count", name: "Purchase Count", path: "/portal/admin/purchases/client-purchase-count" },
-    ...(role !== "support" ? [{ id: "purchase-count", name: "Purchase Analysis", path: "/portal/admin/purchases/purchase-count" }] : []),
+    { id: "purchase-count", name: "Purchase Analysis", path: "/portal/admin/purchases/purchase-count" },
   ];
 
   const handleTabClick = (tab) => {
@@ -274,7 +280,7 @@ export default function PurchasesLayout({ children }) {
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
                     <span style={{ fontWeight: "600", color: "#f9fafb", fontSize: "15px" }}>
-                      {notif.gym_name}
+                      {formatGymName(notif.gym_name)}
                     </span>
                     <span
                       style={{
@@ -320,7 +326,7 @@ export default function PurchasesLayout({ children }) {
                 onMouseEnter={(e) => (e.target.style.backgroundColor = "#e64c4c")}
                 onMouseLeave={(e) => (e.target.style.backgroundColor = "#FF5757")}
               >
-                Acknowledge
+                Got It
               </button>
             </div>
           </div>
@@ -447,7 +453,7 @@ export default function PurchasesLayout({ children }) {
                 onMouseEnter={(e) => (e.target.style.backgroundColor = "#e64c4c")}
                 onMouseLeave={(e) => (e.target.style.backgroundColor = "#FF5757")}
               >
-                Acknowledge
+                Got It
               </button>
             </div>
           </div>

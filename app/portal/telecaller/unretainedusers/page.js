@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { formatGymName } from "@/lib/utils";
 import {
   FaSearch,
   FaFilter,
@@ -450,7 +451,7 @@ export default function Users() {
                       <div className="user-name">{user.name}</div>
                     </td>
                     <td>{user.mobile}</td>
-                    <td>{user.gymName}</td>
+                    <td>{formatGymName(user.gymName)}</td>
                     <td>
                       <span className={`status-badge ${user.status}`}>
                         {user.status === "active" ? (

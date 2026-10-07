@@ -10,6 +10,7 @@ import {
   FaChevronRight,
   FaArrowLeft,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function FreeTrial() {
   const router = useRouter();
@@ -276,7 +277,7 @@ export default function FreeTrial() {
                     </td>
                     <td>{user.mobile}</td>
                     <td>
-                      <div>{user.gym_name}</div>
+                      <div>{formatGymName(user.gym_name)}</div>
                       <div style={{ fontSize: "12px", color: "#888" }}>
                         {user.gym_location}
                       </div>

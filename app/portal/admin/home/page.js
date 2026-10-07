@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useRole } from "../../layout";
 import axiosInstance from "@/lib/axios";
-import { FaTag, FaCalendarCheck } from "react-icons/fa";
+import { FaTag, FaCalendarCheck, FaDumbbell, FaUsers, FaUserTimes } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function Home() {
   const baseRouter = useRouter();
@@ -116,6 +117,7 @@ export default function Home() {
       verifiedGyms: { verified: 0, total: 0 },
       unverifiedGyms: 0,
       unverifiedSplitup: { red: 0, hold: 0 },
+      review: { review_count: 0 },
     },
     plans: {
       freeTrial: 0,
@@ -157,6 +159,15 @@ export default function Home() {
       active_subscribers: 0,
       kyra_users: 0,
     },
+    review: {
+      review_count: 0,
+    },
+    walletWithdraw: {
+      withdraw_count: 0,
+    },
+    accountDeleteRequest: {
+      account_delete_request_count: 0,
+    },
   });
 
   const [priceNotifications, setPriceNotifications] = useState([]);
@@ -170,6 +181,11 @@ export default function Home() {
         return {
           backgroundColor: "rgba(168, 85, 247, 0.15)", // purple
           color: "#c084fc",
+        };
+      case "Weekly Pass":
+        return {
+          backgroundColor: "rgba(16, 185, 129, 0.15)", // green
+          color: "#34d399",
         };
       case "Nutrition Plan":
         return {
@@ -1017,7 +1033,7 @@ export default function Home() {
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
                     <span style={{ fontWeight: "600", color: "#f9fafb", fontSize: "15px" }}>
-                      {notif.gym_name}
+                      {formatGymName(notif.gym_name)}
                     </span>
                     <span
                       style={{
@@ -1063,7 +1079,7 @@ export default function Home() {
                 onMouseEnter={(e) => (e.target.style.backgroundColor = "#e64c4c")}
                 onMouseLeave={(e) => (e.target.style.backgroundColor = "#FF5757")}
               >
-                Acknowledge
+                Got It
               </button>
             </div>
           </div>
@@ -1162,7 +1178,7 @@ export default function Home() {
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "13px" }}>
-                    <span style={{ color: "#10b981", fontWeight: "600", fontSize: "14px" }}>
+                    <span style={{ color: "#ff5757", fontWeight: "600", fontSize: "14px" }}>
                       ₹{notif.amount}
                     </span>
                     <span style={{ color: "#6b7280", fontSize: "12px" }}>
@@ -1190,7 +1206,7 @@ export default function Home() {
                 onMouseEnter={(e) => (e.target.style.backgroundColor = "#e64c4c")}
                 onMouseLeave={(e) => (e.target.style.backgroundColor = "#FF5757")}
               >
-                Acknowledge Bookings
+                Got It
               </button>
             </div>
           </div>
@@ -1200,18 +1216,18 @@ export default function Home() {
       {/* Growth Metrics Section */}
       <div className="section-container">
         <h3 className="section-heading" style={{ textAlign: "center", marginBottom: "30px" }}>
-          <span style={{ color: "#FF5757" }}>Gr</span><span style={{ color: "#fff" }}>owth Metrics</span>
+          <span style={{ color: "#FF5757" }}>Growth</span><span style={{ color: "#fff" }}> Metrics</span>
         </h3>
       </div>
 
       {/* Fittbot Section */}
       <div className="section-container">
         <h5 className="section-heading">
-          <span style={{ color: "#FF5757" }}>Fy</span><span style={{ color: "#fff" }}>mble Users</span>
+          <span style={{ color: "#FF5757" }}>Fymble</span><span style={{ color: "#fff" }}> Users</span>
         </h5>
         <div className="row g-4">
           {/* Total Users Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1316,7 +1332,7 @@ export default function Home() {
           </div>
 
           {/* Active Users Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1424,7 +1440,7 @@ export default function Home() {
           </div>
 
           {/* Total Paying Users Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div className="dashboard-card">
               <div className="card-header-custom extra-space">
                 <h6 className="card-title">Total Paying Users</h6>
@@ -1438,6 +1454,32 @@ export default function Home() {
                     {(((dashboardData.fittbot.totalPayingUsers || 0) / dashboardData.fittbot.totalUsers.overall) * 100).toFixed(1)}% of Total users
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+
+          {/* Delete Requests Card */}
+          <div className="col-xl-3 col-lg-6 col-md-6">
+            <div
+              className="dashboard-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push("/portal/admin/delete-requests")}
+            >
+              <div className="card-header-custom extra-space">
+                <h6 className="card-title" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <FaUserTimes style={{ color: "#FF5757" }} />
+                  <span>Delete Requests</span>
+                </h6>
+              </div>
+              <div className="card-body-custom">
+                <div className="metric-number" style={{ color: "#FF5757" }}>
+                  {typeof dashboardData.accountDeleteRequest === "object" && dashboardData.accountDeleteRequest !== null
+                    ? (dashboardData.accountDeleteRequest.account_delete_request_count ?? 0)
+                    : (dashboardData.accountDeleteRequest ?? 0)}
+                </div>
+                <div style={{ fontSize: "12px", color: "#888", marginTop: "4px" }}>
+                  Pending Account Delete Requests
+                </div>
               </div>
             </div>
           </div>
@@ -1511,7 +1553,7 @@ export default function Home() {
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
-              onClick={() => router.push("/portal/admin/stats")}
+              onClick={() => router.push("/portal/admin/reviews")}
             >
               <div className="card-header-custom">
                 <h6 className="card-title">Onboarded Gyms</h6>
@@ -1559,7 +1601,7 @@ export default function Home() {
           */}
 
           {/* Live Gyms Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1577,7 +1619,7 @@ export default function Home() {
           </div>
 
           {/* Unverified Gyms Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1595,7 +1637,7 @@ export default function Home() {
           </div>
 
           {/* Unverified Splitup Card */}
-          <div className="col-xl-4 col-lg-6 col-md-6">
+          <div className="col-xl-3 col-lg-6 col-md-6">
             <div
               className="dashboard-card"
               style={{ cursor: "pointer" }}
@@ -1631,6 +1673,27 @@ export default function Home() {
                       Hold
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Reviews Card */}
+          <div className="col-xl-3 col-lg-6 col-md-6">
+            <div
+              className="dashboard-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push("/portal/admin/reviews")}
+            >
+              <div className="card-header-custom extra-space">
+                <h6 className="card-title">Feedback</h6>
+              </div>
+              <div className="card-body-custom">
+                <div className="metric-number">
+                  {typeof dashboardData.review === "object" && dashboardData.review !== null
+                    ? (dashboardData.review.review_count ?? 0)
+                    : (dashboardData.review ?? 0)}
+                  <p style={{ fontSize: "13px", color: "#888", marginTop: "4px" }}>No. of review by clients</p>
                 </div>
               </div>
             </div>
@@ -2126,7 +2189,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>        
+        </div>
       </div>
 
       {/* Gym Photos Details Section - Commented out */}
@@ -2217,6 +2280,36 @@ export default function Home() {
           </div>
         </div>
       </div> */}
+
+      {/* Wallet Section */}
+      <div className="section-container">
+        <h3 className="section-heading">
+          <span style={{ color: "#FF5757" }}>Wa</span><span style={{ color: "#fff" }}>llet</span>
+        </h3>
+        <div className="row g-4">
+          <div className="col-xl-4 col-lg-6 col-md-6">
+            <div
+              className="dashboard-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => router.push("/portal/admin/wallet-requests")}
+            >
+              <div className="card-header-custom extra-space">
+                <h6 className="card-title">Withdrawal Requests</h6>
+              </div>
+              <div className="card-body-custom">
+                <div className="metric-number">
+                  {typeof dashboardData.walletWithdraw === "object" && dashboardData.walletWithdraw !== null
+                    ? (dashboardData.walletWithdraw.withdraw_count ?? 0)
+                    : (dashboardData.walletWithdraw ?? 0)}
+                </div>
+                <div style={{ fontSize: "13px", color: "#888", marginTop: "4px" }}>
+                  Pending withdrawal requests
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Reward Program Participants Section */}
       <div className="section-container">

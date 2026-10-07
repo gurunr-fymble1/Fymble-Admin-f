@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import axiosInstance from "@/lib/axios";
 import { FaDownload } from "react-icons/fa";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { formatGymName } from "@/lib/utils";
 
 export default function TodaySchedule() {
   const [loading, setLoading] = useState(true);
@@ -258,7 +259,7 @@ export default function TodaySchedule() {
                 return (
                   <tr key={item.id}>
                     <td className="client-name">{item.client_name || "N/A"}</td>
-                    <td className="gym-name">{item.gym_name || "N/A"}</td>
+                    <td className="gym-name">{formatGymName(item.gym_name) || "N/A"}</td>
                     <td className="type">
                       {isWeeklyPass ? (
                         item.type === 'Daily Pass' ? (
@@ -426,6 +427,7 @@ export default function TodaySchedule() {
 
         table.schedule-table .gym-name {
           color: #ccc !important;
+          text-transform: capitalize;
         }
 
         table.schedule-table .type {

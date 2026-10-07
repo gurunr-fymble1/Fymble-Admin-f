@@ -9,6 +9,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function OnlineMembers() {
   const router = useRouter();
@@ -276,7 +277,7 @@ export default function OnlineMembers() {
                     </td>
                     <td>{client.contact || "-"}</td>
                     <td>{client.gender || "N/A"}</td>
-                    <td>{client.gym_name || "-"}</td>
+                    <td>{formatGymName(client.gym_name) || "-"}</td>
                     <td>{formatDate(client.joined_date)}</td>
                     <td>{formatDate(client.last_purchase_date)}</td>
                   </tr>

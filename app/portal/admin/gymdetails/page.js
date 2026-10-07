@@ -5,6 +5,7 @@ import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
 import { Modal } from "react-bootstrap";
 import { useRole } from "../../layout";
+import { formatGymName } from "@/lib/utils";
 
 const GymDetails = () => {
   const router = useRouter();
@@ -188,7 +189,7 @@ const GymDetails = () => {
             />
           )}
           <h2 className="users-title">
-            <span style={{ color: "white" }}>{gymName || `Gym ${gymId}`}</span>
+            <span style={{ color: "white" }}>{formatGymName(gymName) || `Gym ${gymId}`}</span>
           </h2>
         </div>
       </div>

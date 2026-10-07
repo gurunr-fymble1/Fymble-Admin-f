@@ -80,23 +80,24 @@ export default function BookingAverages() {
 
   // Prepare chart data for each average with source breakdown
   const prepareChartData = (breakdown) => {
+    const bd = breakdown || {};
     const groupedBreakdown = {
-      daily_pass: breakdown.daily_pass || 0,
-      sessions: breakdown.sessions || 0,
-      gym_membership: breakdown.gym_membership || 0,
-      kyra_ai: breakdown.kyra_ai || 0,
-      other: (breakdown.fittbot_subscription || 0) + (breakdown.ai_credits || 0) + (breakdown.ai_diet_coach || 0)
+      daily_pass: bd.daily_pass || 0,
+      sessions: bd.sessions || 0,
+      gym_membership: bd.gym_membership || 0,
+      kyra_ai: bd.kyra_ai || 0,
+      other: (bd.fittbot_subscription || 0) + (bd.ai_credits || 0) + (bd.ai_diet_coach || 0)
     };
     return Object.entries(groupedBreakdown).map(([source, value]) => ({
-      name: SOURCE_LABELS[source],
+      name: SOURCE_LABELS[source] || source,
       value: value,
       source: source
     })).filter(item => item.value > 0); // Only show sources with values
   };
 
-  const monthlyChartData = prepareChartData(data.monthlyBreakdown);
-  const weeklyChartData = prepareChartData(data.weeklyBreakdown);
-  const dailyChartData = prepareChartData(data.dailyBreakdown);
+  const monthlyChartData = prepareChartData(data?.monthlyBreakdown);
+  const weeklyChartData = prepareChartData(data?.weeklyBreakdown);
+  const dailyChartData = prepareChartData(data?.dailyBreakdown);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -136,6 +137,10 @@ export default function BookingAverages() {
       </div>
     );
   };
+
+  if (!data) {
+    return null;
+  }
 
   return (
     <div
@@ -201,7 +206,7 @@ export default function BookingAverages() {
           </ResponsiveContainer>
           <CustomLegend data={monthlyChartData} />
           <div style={{ color: "#fff", fontSize: "20px", fontWeight: "bold", marginTop: "10px" }}>
-            {data.monthlyAverage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {(data.monthlyAverage || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ color: "#888", fontSize: "12px", marginTop: "5px" }}>
             bookings/month
@@ -244,7 +249,7 @@ export default function BookingAverages() {
           </ResponsiveContainer>
           <CustomLegend data={weeklyChartData} />
           <div style={{ color: "#fff", fontSize: "20px", fontWeight: "bold", marginTop: "10px" }}>
-            {data.weeklyAverage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {(data.weeklyAverage || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ color: "#888", fontSize: "12px", marginTop: "5px" }}>
             bookings/week
@@ -287,7 +292,7 @@ export default function BookingAverages() {
           </ResponsiveContainer>
           <CustomLegend data={dailyChartData} />
           <div style={{ color: "#fff", fontSize: "20px", fontWeight: "bold", marginTop: "10px" }}>
-            {data.dailyAverage.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {(data.dailyAverage || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <div style={{ color: "#888", fontSize: "12px", marginTop: "5px" }}>
             bookings/day

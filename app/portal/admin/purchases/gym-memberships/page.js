@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axios";
 import { FaDownload } from "react-icons/fa";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
 import { useRole } from "../../../layout";
+import { formatGymName } from "@/lib/utils";
 
 export default function GymMemberships() {
   const { role } = useRole();
@@ -240,7 +241,7 @@ export default function GymMemberships() {
           <div style={{ flex: 1 }}></div>
 
           {/* Export Button */}
-          {(role === "admin" || role === "support") && (
+          {(role === "admin" || role === "support" || role === "accountant") && (
             <button
               className="btn"
               onClick={handleExport}
@@ -482,7 +483,7 @@ export default function GymMemberships() {
                               title="Distinct: Single booking type"
                             />
                           )}
-                          {item.gym_name || "N/A"}
+                          {formatGymName(item.gym_name) || "N/A"}
                         </span>
                       </td>
                       <td className="city">{item.gym_city || "N/A"}</td>
@@ -676,6 +677,7 @@ export default function GymMemberships() {
 
         table.memberships-table .gym-name {
           color: #ccc !important;
+          text-transform: capitalize;
         }
 
         table.memberships-table .type {

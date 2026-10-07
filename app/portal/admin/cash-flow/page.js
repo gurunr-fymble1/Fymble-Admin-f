@@ -278,45 +278,45 @@ export default function CashFlowPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
+          {(role === "admin" || role === "accountant") && (
+            <button
+              onClick={() => setShowExportModal(true)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#22c55e",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "14px",
+                fontWeight: "500",
+                cursor: "pointer",
+                transition: "background-color 0.2s"
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
+              onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
+            >
+              Export
+            </button>
+          )}
           {role === "admin" && (
-            <>
-              <button
-                onClick={() => setShowExportModal(true)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#22c55e",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "#16a34a"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "#22c55e"}
-              >
-                Export
-              </button>
-              <button
-                onClick={() => setShowOpeningBalanceModal(true)}
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#FF5757",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s"
-                }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = "#e04848"}
-                onMouseLeave={(e) => e.target.style.backgroundColor = "#FF5757"}
-              >
-                + Opening Balance
-              </button>
-            </>
+            <button
+              onClick={() => setShowOpeningBalanceModal(true)}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#FF5757",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "14px",
+                fontWeight: "500",
+                cursor: "pointer",
+                transition: "background-color 0.2s"
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = "#e04848"}
+              onMouseLeave={(e) => e.target.style.backgroundColor = "#FF5757"}
+            >
+              + Opening Balance
+            </button>
           )}
         </div>
       </div>

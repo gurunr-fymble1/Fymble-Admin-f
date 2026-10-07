@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { formatGymName } from "@/lib/utils";
 import {
   FaSearch,
   FaSortUp,
@@ -237,7 +238,7 @@ export default function ActiveClients() {
           )}
           <h2 className="users-title" style={{ margin: 0 }}>
             <span style={{ color: "#FF5757" }}>A</span>ctive Gym Clients
-            {gymName && <span style={{ marginLeft: "10px", fontSize: "18px", color: "#ccc" }}>- {gymName}</span>}
+            {gymName && <span style={{ marginLeft: "10px", fontSize: "18px", color: "#ccc" }}>- {formatGymName(gymName)}</span>}
           </h2>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>

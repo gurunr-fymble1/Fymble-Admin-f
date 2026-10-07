@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { FaSearch, FaChevronLeft, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function TelecallerConvertedClients() {
   const router = useRouter();
@@ -243,7 +244,7 @@ export default function TelecallerConvertedClients() {
             {purchase.gym_name && (
               <>
                 <span style={{ color: "#666" }}>•</span>
-                <span style={{ color: "#ccc", fontSize: "13px" }}>{purchase.gym_name}</span>
+                <span style={{ color: "#ccc", fontSize: "13px" }}>{formatGymName(purchase.gym_name)}</span>
               </>
             )}
           </div>
@@ -616,7 +617,7 @@ export default function TelecallerConvertedClients() {
                         )}
                       </td>
                       <td>{client.contact || "-"}</td>
-                      <td>{client.gym_name || "-"}</td>
+                      <td>{formatGymName(client.gym_name) || "-"}</td>
                       <td>
                         <span
                           className="plan-badge"

@@ -9,6 +9,7 @@ import {
   FaArrowLeft,
   FaDownload,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function FittbotSubscriptions() {
   const router = useRouter();
@@ -353,7 +354,7 @@ export default function FittbotSubscriptions() {
                       <div>{user.mobile}</div>
                     </td>
                     <td>
-                      <div>{user.gym_name}</div>
+                      <div>{formatGymName(user.gym_name)}</div>
                     </td>
                     <td>
                       <div style={{ fontSize: "13px", color: "#ccc" }}>

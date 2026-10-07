@@ -13,6 +13,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function GymVisitDetail() {
   const router = useRouter();
@@ -264,7 +265,7 @@ export default function GymVisitDetail() {
                   Gym Name
                 </label>
                 <div style={{ color: "#fff", fontSize: "14px" }}>
-                  {visitData.gym_name}
+                  {formatGymName(visitData.gym_name)}
                 </div>
               </div>
             )}

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { formatGymName } from "@/lib/utils";
 import {
   FaSearch,
   FaSortUp,
@@ -1136,7 +1137,7 @@ export default function Users() {
             {purchase.gym_name && (
               <>
                 <span style={{ color: "#666" }}>•</span>
-                <span style={{ color: "#ccc", fontSize: "13px" }}>{purchase.gym_name}</span>
+                <span style={{ color: "#ccc", fontSize: "13px" }}>{formatGymName(purchase.gym_name)}</span>
               </>
             )}
           </div>
@@ -2660,7 +2661,7 @@ export default function Users() {
 
                 {/* Gym Column */}
                 <div className="table-cell table-col-gym" data-label="Gym">
-                  <div className="cell-value">{user.gym_name || "-"}</div>
+                  <div className="cell-value">{formatGymName(user.gym_name) || "-"}</div>
                 </div>
 
                 {/* Kyra AI Column */}

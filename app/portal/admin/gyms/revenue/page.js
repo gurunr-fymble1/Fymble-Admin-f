@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { FaChevronLeft } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function RevenuePerGymPage() {
   const router = useRouter();
@@ -201,7 +202,7 @@ export default function RevenuePerGymPage() {
                         }}
                       >
                         <td style={{ padding: "15px 20px", color: "#e5e7eb" }}>
-                          {gym.gym_name}
+                          {formatGymName(gym.gym_name)}
                         </td>
                         <td style={{ padding: "15px 20px", color: "#9ca3af" }}>
                           {gym.city}

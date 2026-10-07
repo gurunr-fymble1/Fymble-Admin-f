@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "@/lib/axios";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function ClientPurchaseSummaryPage() {
   const { client_id } = useParams();
@@ -136,7 +137,7 @@ export default function ClientPurchaseSummaryPage() {
                         {items.map((item, idx) => (
                           <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", backgroundColor: "#1e1e1e60", borderRadius: "8px" }}>
                             <span style={{ color: "#aaa", fontSize: "13px", fontWeight: "500" }}>
-                              {item.gym_name || "Unknown Gym"}
+                              {formatGymName(item.gym_name) || "Unknown Gym"}
                             </span>
                             <span style={{ color: "white", fontSize: "14px", fontWeight: "600" }}>
                               {item.count}

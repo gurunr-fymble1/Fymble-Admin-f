@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FaChevronLeft, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaUsers, FaTag } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
+import { formatGymName } from "@/lib/utils";
 
 export default function SessionDetails() {
   const params = useParams();
@@ -233,7 +234,7 @@ export default function SessionDetails() {
                         <FaMapMarkerAlt style={{ color: "#FF5757", flexShrink: 0 }} />
                         <div>
                           <div style={{ fontSize: "12px", color: "#888" }}>Gym Name</div>
-                          <div style={{ fontSize: "14px", color: "#fff", fontWeight: "500" }}>{session.gym_name} (ID: {session.gym_id})</div>
+                          <div style={{ fontSize: "14px", color: "#fff", fontWeight: "500" }}>{formatGymName(session.gym_name)} (ID: {session.gym_id})</div>
                         </div>
                       </div>
                     </div>

@@ -11,6 +11,7 @@ import {
   FaChevronRight,
   FaArrowLeft,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function GymVisitsList() {
   const router = useRouter();
@@ -455,7 +456,7 @@ export default function GymVisitsList() {
                           }
                           style={{ cursor: "pointer" }}
                         >
-                          {visit.gym_name}
+                          {formatGymName(visit.gym_name)}
                         </div>
                         <div style={{ fontSize: "12px", color: "#888" }}>
                           {visit.gym_address}

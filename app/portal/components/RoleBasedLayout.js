@@ -18,7 +18,9 @@ import {
   HiOutlineCreditCard,
   HiOutlineReceiptTax,
   HiOutlineShieldCheck,
-  HiOutlineCollection
+  HiOutlineCollection,
+  HiOutlineDocumentReport,
+  HiOutlineUserRemove
 } from "react-icons/hi";
 import { MdWorkOutline, MdOutlineTabletMac, MdRestaurantMenu } from "react-icons/md";
 
@@ -253,6 +255,7 @@ export default function RoleBasedLayout({ children }) {
     { name: "Cash Flow", icon: CashFlowIcon, path: "/portal/admin/cash-flow" },
     { name: "Tax & Compliance", icon: TaxComplianceIcon, path: "/portal/admin/tax-compliance" },
     { name: "MRR", icon: MRRIcon, path: "/portal/admin/mrr" },
+    { name: "Sales Report", icon: HiOutlineDocumentReport, path: "/portal/admin/sales-report" },
     // { name: "GMV", icon: HiOutlineChartBar, path: "/portal/admin/gmv" },
   ];
 
@@ -321,6 +324,11 @@ export default function RoleBasedLayout({ children }) {
             icon: HiCurrencyRupee,
             path: "/portal/admin/payment-data",
           },
+          {
+            name: "Razorpay Payments",
+            icon: HiOutlineCreditCard,
+            path: "/portal/admin/razorpay-payments",
+          },
           // {
           //   name: "Nutrition Activity",
           //   icon: MdRestaurantMenu,
@@ -388,6 +396,11 @@ export default function RoleBasedLayout({ children }) {
             name: "Payout Calculation",
             icon: HiCurrencyRupee,
             path: "/portal/admin/payment-data",
+          },
+          {
+            name: "Razorpay Payments",
+            icon: HiOutlineCreditCard,
+            path: "/portal/admin/razorpay-payments",
           },
         ];
       case "telecaller":
@@ -521,11 +534,12 @@ export default function RoleBasedLayout({ children }) {
         "/portal/admin/expenses",
         "/portal/admin/cash-flow",
         "/portal/admin/tax-compliance",
-        "/portal/admin/mrr"
+        "/portal/admin/mrr",
+        "/portal/admin/sales-report"
       ],
       support: ["/portal/support", "/portal/admin/gymplans", "/portal/admin/gymphotos", "/portal/admin/gymdetails", 
         "/portal/admin/verified-gyms", "/portal/admin/unverified-gyms", "/portal/admin/unverified-splitup", "/portal/admin/purchases", 
-        "/portal/admin/tracking", "/portal/admin/payment-data", "/portal/admin/kyra"],
+        "/portal/admin/tracking", "/portal/admin/payment-data", "/portal/admin/razorpay-payments", "/portal/admin/kyra", "/portal/admin/wallet-requests", "/portal/admin/reviews", "/portal/admin/delete-requests"],
       telecaller: ["/portal/telecaller"],
       nutritionist: ["/portal/nutritionist"],
     };
@@ -715,7 +729,7 @@ export default function RoleBasedLayout({ children }) {
                 <img 
                   src="/Fymble.png" 
                   alt="Fymble" 
-                  style={{ height: "25px", width: "auto", display: "block" }} 
+                  style={{ height: "30px", width: "auto", display: "block" }} 
                 />
               ) : (
                 <span

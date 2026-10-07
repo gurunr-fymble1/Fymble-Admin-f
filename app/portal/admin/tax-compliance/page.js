@@ -211,7 +211,7 @@ export default function TaxCompliancePage() {
           <div className="dashboard-card">
             <div className="card-header-custom" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h6 className="card-title">Tax & Compliance - Monthly Overview</h6>
-              {role === "admin" && (
+              {(role === "admin" || role === "accountant") && (
                 <button
                   onClick={() => setShowExportModal(true)}
                   style={{
@@ -307,17 +307,15 @@ export default function TaxCompliancePage() {
                         textTransform: "uppercase",
                         letterSpacing: "0.05em"
                       }}>TDS Payable</th>
-                      {role === "admin" && (
-                        <th style={{
-                          padding: "12px 16px",
-                          textAlign: "center",
-                          color: "#9ca3af",
-                          fontWeight: "600",
-                          fontSize: "0.75rem",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.05em"
-                        }}>Actions</th>
-                      )}
+                      <th style={{
+                        padding: "12px 16px",
+                        textAlign: "center",
+                        color: "#9ca3af",
+                        fontWeight: "600",
+                        fontSize: "0.75rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.05em"
+                      }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -437,7 +435,7 @@ export default function TaxCompliancePage() {
                         </td>
 
                         {/* Actions */}
-                        {role === "admin" && (
+                        
                           <td style={{
                             padding: "16px",
                             textAlign: "center"
@@ -495,7 +493,7 @@ export default function TaxCompliancePage() {
                               </button>
                             )}
                           </td>
-                        )}
+                        
                       </tr>
                     ))}
                   </tbody>

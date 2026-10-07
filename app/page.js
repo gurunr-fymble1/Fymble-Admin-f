@@ -125,7 +125,10 @@ export default function AdminLogin() {
         }
       } catch (err) {
         if (err.response?.status === 400) {
-          setError("Only admins are allowed to access this portal");
+          setError(
+            err.response?.data?.detail ||
+            "Only authorized users are allowed to access this portal"
+          );
         } else {
           setError(
             err.response?.data?.detail || "Failed to Login. Please try again."
@@ -187,7 +190,10 @@ export default function AdminLogin() {
         }
       } catch (err) {
         if (err.response?.status === 403) {
-          setError("Only admins are allowed to access this portal");
+          setError(
+            err.response?.data?.detail ||
+            "Only authorized users are allowed to access this portal"
+          );
         } else {
           setError(
             err.response?.data?.detail || "Incorrect OTP. Please try again."
@@ -389,7 +395,10 @@ export default function AdminLogin() {
         }
       } catch (err) {
         if (err.response?.status === 403) {
-          setError("Only admins are allowed to access this portal");
+          setError(
+            err.response?.data?.detail ||
+            "Only authorized users are allowed to access this portal"
+          );
         } else {
           setError(
             err.response?.data?.detail || "Incorrect OTP. Please try again."
@@ -462,10 +471,10 @@ export default function AdminLogin() {
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
           <div className={styles.brandContainer} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <img 
-              src="/Fymble.png" 
-              alt="Fymble Logo" 
-              style={{ height: "35px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }} 
+            <img
+              src="/Fymble.png"
+              alt="Fymble Logo"
+              style={{ height: "55px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }}
             />
             <p className={styles.subtitle}>Admin Dashboard</p>
           </div>
@@ -488,10 +497,10 @@ export default function AdminLogin() {
       <div className={styles.loginCard}>
         {/* Brand Logo */}
         <div className={styles.brandContainer} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <img 
-            src="/Fymble.png" 
-            alt="Fymble Logo" 
-            style={{ height: "35px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }} 
+          <img
+            src="/Fymble.png"
+            alt="Fymble Logo"
+            style={{ height: "45px", width: "auto", objectFit: "contain", marginBottom: "0.5rem" }}
           />
           <p className={styles.subtitle}>Admin Dashboard</p>
         </div>
@@ -510,7 +519,7 @@ export default function AdminLogin() {
                 />
                 <span>Admin</span>
               </label> */}
-              {/* <label className={styles.roleOption}>
+            {/* <label className={styles.roleOption}>
                 <input
                   type="radio"
                   name="role"

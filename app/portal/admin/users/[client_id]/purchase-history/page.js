@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FaDownload, FaChevronLeft } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { formatGymName } from "@/lib/utils";
 
 export default function PurchaseHistory() {
   const params = useParams();
@@ -417,7 +418,7 @@ export default function PurchaseHistory() {
                       return (
                         <tr key={pass.id}>
                           <td>{formatDateTime(pass.created_at)}</td>
-                          <td>{pass.gym_name || "-"}</td>
+                          <td>{formatGymName(pass.gym_name) || "-"}</td>
                           <td>{formatDate(pass.valid_from)}</td>
                           <td>{formatDate(pass.valid_until)}</td>
                           <td>{pass.days_total || "-"}</td>
@@ -502,7 +503,7 @@ export default function PurchaseHistory() {
                                 .replace(/\b\w/g, (l) => l.toUpperCase())}
                             </span>
                           </td>
-                          <td>{session.gym_name || "-"}</td>
+                          <td>{formatGymName(session.gym_name) || "-"}</td>
                           <td>{timeRange}</td>
                           <td>
                             {session.price_paid
@@ -660,7 +661,7 @@ export default function PurchaseHistory() {
                     {gymMembershipData.map((membership) => (
                       <tr key={membership.id}>
                         <td>{formatDateTime(membership.captured_at || membership.created_at)}</td>
-                        <td>{membership.gym_name || "-"}</td>
+                        <td>{formatGymName(membership.gym_name) || "-"}</td>
                         <td>
                           <span
                             style={{

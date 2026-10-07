@@ -12,6 +12,7 @@ import {
   FaTag,
 } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
+import { formatGymName } from "@/lib/utils";
 
 export default function AdminClientTrackingTrackAll() {
   const params = useParams();
@@ -333,7 +334,7 @@ export default function AdminClientTrackingTrackAll() {
                           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                             <FaBuilding style={{ color: "#9ca3af", fontSize: "0.75rem", flexShrink: 0 }} />
                             <span>
-                              {event.gym_name} {event.gym_area ? `(${event.gym_area})` : ""}
+                              {formatGymName(event.gym_name)} {event.gym_area ? `(${event.gym_area})` : ""}
                             </span>
                           </div>
                         ) : (

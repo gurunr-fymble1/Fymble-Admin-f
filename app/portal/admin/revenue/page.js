@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import * as XLSX from "xlsx";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
+import { formatGymName } from "@/lib/utils";
 
 export default function RevenueAnalytics() {
   const { handleExportTrigger, secureExportProps } = useSecureExport();
@@ -532,21 +533,21 @@ export default function RevenueAnalytics() {
 
   const sourceLabels = {
     daily_pass: "Daily Pass",
+    weekly_pass: "Weekly Pass",
     sessions: "Fitness Classes",
     gym_membership: "Gym Membership",
     other: "Other Categories",
-    fittbot_subscription: "Nutrition Plan",
     ai_credits: "AI Credits",
     ai_diet_coach: "AI Diet Coach",
     kyra_ai: "Kyra AI"
   };
 
   const sourceColors = {
-    daily_pass: "#ffffffff",
+    daily_pass: "#3b82f6",
+    weekly_pass: "#10b981",
     sessions: "#4CAF50",
     gym_membership: "#9C27B0", // Purple
     other: "#FFC107", // Yellow/Orange
-    fittbot_subscription: "#FFC107", // Yellow
     ai_credits: "#FF9800", // Orange
     ai_diet_coach: "#E91E63", // Pink
     kyra_ai: "#a855f7" // Purple
@@ -890,6 +891,7 @@ export default function RevenueAnalytics() {
             >
               <option value="all">All Sources</option>
               <option value="daily_pass">Daily Pass</option>
+              <option value="weekly_pass">Weekly Pass</option>
               <option value="sessions">Fitness Classes</option>
               {/* <option value="fittbot_subscription">Nutrition Plan</option> */}
               <option value="gym_membership">Gym Membership</option>
@@ -933,7 +935,7 @@ export default function RevenueAnalytics() {
                 <option value="">All Gyms</option>
                 {getAllGyms().map((gym) => (
                   <option key={gym.gym_id} value={gym.gym_id.toString()}>
-                    {gym.gym_name}
+                    {formatGymName(gym.gym_name)}
                   </option>
                 ))}
               </select>
@@ -982,7 +984,7 @@ export default function RevenueAnalytics() {
                 : `${formatDate(analyticsData.filters.startDate)} - ${formatDate(analyticsData.filters.endDate)}`
               }
               {analyticsData.filters.source !== "all" && ` • ${sourceLabels[analyticsData.filters.source] || analyticsData.filters.source}`}
-              {analyticsData.filters.gymId !== "all" && ` • ${gymName || analyticsData.filters.gymId}`}
+              {analyticsData.filters.gymId !== "all" && ` • ${formatGymName(gymName) || analyticsData.filters.gymId}`}
             </p>
           </div>
 
@@ -1459,7 +1461,7 @@ export default function RevenueAnalytics() {
                     borderRadius: "8px",
                   }}>
                     <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "4px" }}>
-                      {gym.gym_name}
+                      {formatGymName(gym.gym_name)}
                     </div>
                     <div style={{ fontSize: "18px", fontWeight: "700", color: "#fff" }}>
                       {formatCurrency(gym.revenue)}
@@ -1504,7 +1506,7 @@ export default function RevenueAnalytics() {
                 : `${formatDate(purchaseData.filters.startDate)} - ${formatDate(purchaseData.filters.endDate)}`
               }
               {purchaseData.filters.source !== "all" && ` • ${sourceLabels[purchaseData.filters.source] || purchaseData.filters.source}`}
-              {purchaseData.filters.gymId !== "all" && ` • ${gymName || purchaseData.filters.gymId}`}
+              {purchaseData.filters.gymId !== "all" && ` • ${formatGymName(gymName) || purchaseData.filters.gymId}`}
             </p>
           </div>
 
@@ -1543,6 +1545,7 @@ export default function RevenueAnalytics() {
                         {value.unique_users.toLocaleString('en-IN')}
                       </div>
                     </div>
+
                   </div>
                 </div>
               ))}

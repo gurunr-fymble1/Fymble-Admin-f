@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axios";
 import * as XLSX from "xlsx";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
 import { useRole } from "../../../layout";
+import { formatGymName } from "@/lib/utils";
 
 export default function PurchaseCountPage() {
   const { role } = useRole();
@@ -257,34 +258,28 @@ export default function PurchaseCountPage() {
 
   const sourceLabels = {
     daily_pass: "Daily Pass",
+    weekly_pass: "Weekly Pass",
     sessions: "Fitness Classes",
     gym_membership: "Gym Membership",
     kyra_ai: "Kyra AI",
-    other: "Other Categories",
-    fittbot_subscription: "Nutrition Plan",
-    ai_credits: "AI Credits",
-    ai_diet_coach: "AI Diet Coach"
   };
 
   const sourceColors = {
     daily_pass: "#ffffffff",
+    weekly_pass: "#FF5757",
     sessions: "#4CAF50",
     gym_membership: "#2196F3",
     kyra_ai: "#a855f7",
-    other: "#FFC107",
-    fittbot_subscription: "#FFC107", // Yellow
-    ai_credits: "#FF9800", // Orange
-    ai_diet_coach: "#E91E63" // Pink
   };
 
   const getChartEntries = (data) => {
     if (!data || !data.categoryBreakdown) return [];
-    
+
     // If the selected source filter is 'other', show only the subcategories of other
     if (source === "other" && data.otherBreakdown) {
       return Object.entries(data.otherBreakdown);
     }
-    
+
     // Otherwise (source is all/pre-filtered), return categoryBreakdown as is (with lumped 'other')
     return Object.entries(data.categoryBreakdown);
   };
@@ -299,7 +294,7 @@ export default function PurchaseCountPage() {
             Track and analyze all purchases across categories
           </p>
         </div>
-        {!loading && purchaseData && (role === "admin" || role === "support") && (
+        {!loading && purchaseData && (role === "admin" || role === "support" || role === "accountant") && (
           <button
             onClick={handleExport}
             style={{
@@ -441,8 +436,8 @@ export default function PurchaseCountPage() {
                     <div style={{ display: "flex", gap: "6px" }}>
                       <select value={customStartMonth} onChange={(e) => setCustomStartMonth(parseInt(e.target.value))}
                         style={{ padding: "10px", backgroundColor: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: "6px", color: "white", fontSize: "14px" }}>
-                        {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => (
-                          <option key={i+1} value={i+1}>{m}</option>
+                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => (
+                          <option key={i + 1} value={i + 1}>{m}</option>
                         ))}
                       </select>
                       <select value={customStartYear} onChange={(e) => setCustomStartYear(parseInt(e.target.value))}
@@ -459,8 +454,8 @@ export default function PurchaseCountPage() {
                     <div style={{ display: "flex", gap: "6px" }}>
                       <select value={customEndMonth} onChange={(e) => setCustomEndMonth(parseInt(e.target.value))}
                         style={{ padding: "10px", backgroundColor: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: "6px", color: "white", fontSize: "14px" }}>
-                        {["January","February","March","April","May","June","July","August","September","October","November","December"].map((m, i) => (
-                          <option key={i+1} value={i+1}>{m}</option>
+                        {["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].map((m, i) => (
+                          <option key={i + 1} value={i + 1}>{m}</option>
                         ))}
                       </select>
                       <select value={customEndYear} onChange={(e) => setCustomEndYear(parseInt(e.target.value))}
@@ -519,6 +514,7 @@ export default function PurchaseCountPage() {
             >
               <option value="all">All Sources</option>
               <option value="daily_pass">Daily Pass</option>
+              <option value="weekly_pass">Weekly Pass</option>
               <option value="sessions">Fitness Classes</option>
               <option value="gym_membership">Gym Membership</option>
               <option value="kyra_ai">Kyra AI</option>
@@ -554,7 +550,7 @@ export default function PurchaseCountPage() {
               <option value="">All Gyms</option>
               {allGymsList.map((gym) => (
                 <option key={gym.gym_id} value={gym.gym_id.toString()}>
-                  {gym.gym_name}
+                  {formatGymName(gym.gym_name)}
                 </option>
               ))}
             </select>
@@ -601,7 +597,7 @@ export default function PurchaseCountPage() {
                 : `${formatDate(purchaseData.filters.startDate)} - ${formatDate(purchaseData.filters.endDate)}`
               }
               {purchaseData.filters.source !== "all" && ` • ${sourceLabels[purchaseData.filters.source] || purchaseData.filters.source}`}
-              {purchaseData.filters.gymId !== "all" && ` • ${gymName || purchaseData.filters.gymId}`}
+              {purchaseData.filters.gymId !== "all" && ` • ${formatGymName(gymName) || purchaseData.filters.gymId}`}
             </p>
           </div>
 
@@ -640,6 +636,7 @@ export default function PurchaseCountPage() {
                         {value.unique_users.toLocaleString('en-IN')}
                       </div>
                     </div>
+
                   </div>
                 </div>
               ))}

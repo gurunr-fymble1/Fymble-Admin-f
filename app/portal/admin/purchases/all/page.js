@@ -4,6 +4,7 @@ import axiosInstance from "@/lib/axios";
 import { FaDownload } from "react-icons/fa";
 import { useSecureExport, SecureExportModal } from "@/components/auth/SecureExportModal";
 import { useRole } from "../../../layout";
+import { formatGymName } from "@/lib/utils";
 
 export default function AllPurchases() {
   const { role } = useRole();
@@ -29,6 +30,10 @@ export default function AllPurchases() {
   const [distinctGymsFilter, setDistinctGymsFilter] = useState(false);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [exporting, setExporting] = useState(false);
+  const [cityFilter, setCityFilter] = useState("");
+  const [areaFilter, setAreaFilter] = useState("");
+  const [availableCities, setAvailableCities] = useState([]);
+  const [availableAreas, setAvailableAreas] = useState([]);
 
   // Security Verification Flow Hook
   const { handleExportTrigger, secureExportProps } = useSecureExport();
@@ -60,7 +65,7 @@ export default function AllPurchases() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const fetchPurchases = useCallback(async (pageNum, searchQuery, type, start, end, distinctClients, distinctGyms, weeklyTypeFilter, activeFlag = { current: true }) => {
+  const fetchPurchases = useCallback(async (pageNum, searchQuery, type, start, end, distinctClients, distinctGyms, weeklyTypeFilter, cityFilterVal, areaFilterVal, activeFlag = { current: true }) => {
     try {
       setLoading(true);
       setError(null);
@@ -78,6 +83,15 @@ export default function AllPurchases() {
       if (distinctGyms) params.distinct_gyms = true;
       if (type === "Weekly Passes" && weeklyTypeFilter) params.weekly_type = weeklyTypeFilter;
 
+      if (cityFilterVal) {
+        params.city = cityFilterVal;
+        params.gym_city = cityFilterVal;
+      }
+      if (areaFilterVal) {
+        params.area = areaFilterVal;
+        params.gym_area = areaFilterVal;
+      }
+
       const response = await axiosInstance.get("/api/admin/purchases/all-purchases", {
         params,
       });
@@ -92,6 +106,12 @@ export default function AllPurchases() {
           }
           if (response.data.data.distinctGyms) {
             setDistinctGyms(new Set(response.data.data.distinctGyms));
+          }
+          if (Array.isArray(response.data.data.cities)) {
+            setAvailableCities(response.data.data.cities);
+          }
+          if (Array.isArray(response.data.data.areas)) {
+            setAvailableAreas(response.data.data.areas);
           }
         } else {
           throw new Error(response.data.message || "Failed to fetch purchases");
@@ -112,11 +132,11 @@ export default function AllPurchases() {
 
   useEffect(() => {
     const activeFlag = { current: true };
-    fetchPurchases(page, debouncedSearch, typeFilter, startDate, endDate, distinctClientsFilter, distinctGymsFilter, weeklyType, activeFlag);
+    fetchPurchases(page, debouncedSearch, typeFilter, startDate, endDate, distinctClientsFilter, distinctGymsFilter, weeklyType, cityFilter, areaFilter, activeFlag);
     return () => {
       activeFlag.current = false;
     };
-  }, [page, debouncedSearch, typeFilter, startDate, endDate, distinctClientsFilter, distinctGymsFilter, weeklyType, fetchPurchases]);
+  }, [page, debouncedSearch, typeFilter, startDate, endDate, distinctClientsFilter, distinctGymsFilter, weeklyType, cityFilter, areaFilter, fetchPurchases]);
 
   // Fetch booking count based on filter
   const fetchBookingCount = useCallback(async () => {
@@ -194,6 +214,15 @@ export default function AllPurchases() {
       if (distinctGymsFilter) params.distinct_gyms = true;
       if (typeFilter === "Weekly Passes" && weeklyType) params.weekly_type = weeklyType;
 
+      if (cityFilter) {
+        params.city = cityFilter;
+        params.gym_city = cityFilter;
+      }
+      if (areaFilter) {
+        params.area = areaFilter;
+        params.gym_area = areaFilter;
+      }
+
       const response = await axiosInstance.get("/api/admin/purchases/export-purchases", {
         params,
         responseType: "blob",
@@ -252,27 +281,27 @@ export default function AllPurchases() {
     const date = new Date(dateString);
 
     const hasTime =
-    typeof dateString === "string" &&
-    (dateString.includes("T") || dateString.includes(" "));
+      typeof dateString === "string" &&
+      (dateString.includes("T") || dateString.includes(" "));
 
-   // Date + Time
-  if (hasTime) {
-    return date.toLocaleString("en-IN", {
+    // Date + Time
+    if (hasTime) {
+      return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    }
+
+    // Date only
+    return date.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
     });
-  }
-
-  // Date only
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
   };
 
   const isDifferentDay = (dateStr1, dateStr2) => {
@@ -410,6 +439,26 @@ export default function AllPurchases() {
     }
   };
 
+  const displayCities = availableCities.length > 0
+    ? availableCities
+    : Array.from(
+      new Set(
+        purchases
+          .map((p) => p.gym_city?.trim())
+          .filter((c) => c && c !== "-" && c !== "N/A")
+      )
+    ).sort();
+
+  const displayAreas = availableAreas.length > 0
+    ? availableAreas
+    : Array.from(
+      new Set(
+        purchases
+          .map((p) => p.gym_area?.trim())
+          .filter((a) => a && a !== "-" && a !== "N/A")
+      )
+    ).sort();
+
   return (
     <div>
       {/* Filters Card */}
@@ -427,6 +476,12 @@ export default function AllPurchases() {
             filter: invert(1);
             cursor: pointer;
           }
+          .custom-placeholder::placeholder {
+            color: #afafafff !important;
+            opacity: 0.7 !important;
+            font-size: 13px;
+            font-weight: 400;
+          }
         `}</style>
 
         {/* First Row: Search, Type, Export */}
@@ -436,14 +491,14 @@ export default function AllPurchases() {
             <div className="input-group">
               <input
                 type="text"
-                className="form-control"
-                placeholder="Search by name, contact, or gym..."
+                className="form-control custom-placeholder"
+                placeholder="Search by Name, Contact, or Gym..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
                   backgroundColor: "#222",
                   border: "1px solid #333",
-                  color: "#fff",
+                  color: "#ffffffff",
                 }}
               />
               <button
@@ -479,71 +534,71 @@ export default function AllPurchases() {
             <option value="Weekly Passes">Weekly Passes</option>
           </select>
 
-          
+
           {typeFilter === 'Weekly Passes' && <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <div className="d-flex gap-4">
-            {/* Weekly dailypass pack */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <input
-                type="checkbox"
-                id="weeklyDailyPassPack"
-                checked={weeklyType === "Daily Pass"}
-                onChange={(e) => {
-                  setWeeklyType(prev => prev === "Daily Pass" ? "" : "Daily Pass");
-                  setPage(1);
-                }}
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  cursor: "pointer",
-                  accentColor: "#28a745",
-                }}
-              />
-              <label
-                htmlFor="weeklyDailyPassPack"
-                style={{
-                  color: "#ccc",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  userSelect: "none",
-                  margin: 0,
-                }}
-              >
-                Daily Pass
-              </label>
-            </div>
+              {/* Weekly dailypass pack */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <input
+                  type="checkbox"
+                  id="weeklyDailyPassPack"
+                  checked={weeklyType === "Daily Pass"}
+                  onChange={(e) => {
+                    setWeeklyType(prev => prev === "Daily Pass" ? "" : "Daily Pass");
+                    setPage(1);
+                  }}
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    cursor: "pointer",
+                    accentColor: "#28a745",
+                  }}
+                />
+                <label
+                  htmlFor="weeklyDailyPassPack"
+                  style={{
+                    color: "#ccc",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    userSelect: "none",
+                    margin: 0,
+                  }}
+                >
+                  Daily Pass
+                </label>
+              </div>
 
-            {/* Weekly sessions pack */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <input
-                type="checkbox"
-                id="weeklySessionsPack"
-                checked={weeklyType === "Session"}
-                onChange={(e) => {
-                  setWeeklyType(prev => prev === "Session" ? "" : "Session");
-                  setPage(1);
-                }}
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  cursor: "pointer",
-                  accentColor: "#ffc107",
-                }}
-              />
-              <label
-                htmlFor="weeklySessionsPack"
-                style={{
-                  color: "#ccc",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  userSelect: "none",
-                  margin: 0,
-                }}
-              >
-                Sessions
-              </label>
+              {/* Weekly sessions pack */}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <input
+                  type="checkbox"
+                  id="weeklySessionsPack"
+                  checked={weeklyType === "Session"}
+                  onChange={(e) => {
+                    setWeeklyType(prev => prev === "Session" ? "" : "Session");
+                    setPage(1);
+                  }}
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    cursor: "pointer",
+                    accentColor: "#ffc107",
+                  }}
+                />
+                <label
+                  htmlFor="weeklySessionsPack"
+                  style={{
+                    color: "#ccc",
+                    fontSize: "14px",
+                    cursor: "pointer",
+                    userSelect: "none",
+                    margin: 0,
+                  }}
+                >
+                  Sessions
+                </label>
+              </div>
             </div>
-          </div>
           </div>}
 
           {/* Spacer */}
@@ -649,7 +704,7 @@ export default function AllPurchases() {
           </div>
 
           {/* Export Button */}
-          {(role === "admin" || role === "support") && (
+          {(role === "admin" || role === "support" || role === "accountant") && (
             <button
               className="btn"
               onClick={handleExport}
@@ -800,7 +855,7 @@ export default function AllPurchases() {
           <p style={{ fontSize: "16px", color: "#ef4444" }}>Error: {error}</p>
           <button
             className="btn btn-sm mt-3"
-            onClick={() => fetchPurchases(page, search)}
+            onClick={() => fetchPurchases(page, debouncedSearch, typeFilter, startDate, endDate, distinctClientsFilter, distinctGymsFilter, weeklyType, cityFilter, areaFilter)}
             style={{ backgroundColor: "#FF5757", border: "none", color: "#fff" }}
           >
             Retry
@@ -819,8 +874,71 @@ export default function AllPurchases() {
                 <th>Client Name</th>
                 <th>Contact</th>
                 <th>Gym Name</th>
-                <th>City</th>
-                <th>area</th>
+                <th>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <span>City</span>
+                    <select
+                      value={cityFilter}
+                      onChange={(e) => {
+                        setCityFilter(e.target.value);
+                        setAreaFilter("");
+                        setPage(1);
+                      }}
+                      style={{
+                        backgroundColor: "#222",
+                        border: "1px solid #333",
+                        color: "#fff",
+                        fontSize: "12px",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        fontWeight: "normal",
+                        outline: "none",
+                        cursor: "pointer",
+                        minWidth: "110px",
+                        maxWidth: "135px",
+                      }}
+                    >
+                      <option value="">All Cities</option>
+                      {displayCities.map((city) => (
+                        <option key={city} value={city}>
+                          {city}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </th>
+                <th>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    <span>Area</span>
+                    <select
+                      value={areaFilter}
+                      onChange={(e) => {
+                        setAreaFilter(e.target.value);
+                        setPage(1);
+                      }}
+                      style={{
+                        backgroundColor: "#222",
+                        border: "1px solid #333",
+                        color: "#fff",
+                        fontSize: "12px",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                        fontWeight: "normal",
+                        outline: "none",
+                        cursor: "pointer",
+                        minWidth: "110px",
+                        maxWidth: "135px",
+                      }}
+                    >
+                      <option value="">All Areas</option>
+                      {displayAreas.map((area) => (
+                        <option key={area} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </th>
                 <th>Type</th>
                 <th>Days / Classes</th>
                 <th>Amount</th>
@@ -832,399 +950,406 @@ export default function AllPurchases() {
               </tr>
             </thead>
             <tbody>
-              {purchases.map((purchase, index) => {
-                const isSession = purchase.type === "Session";
-                const hasSchedule = isSession
-                  ? (purchase.session_schedule?.length > 0 || purchase.scheduled_days_detailed?.length > 0 || purchase.scheduled_date?.length > 0)
-                  : purchase.scheduled_date?.length > 0;
-                const hasContacts = !!(purchase.gym_contact || purchase.owner_contact || purchase.client_contact || purchase.gym_area || purchase.owner_name);
-                const isExpandable = hasSchedule || hasContacts;
-                const isExpanded = expandedRows.has(purchase.id);
-                const isWeeklyPass = purchase.pack_size && (
-                  (purchase.type === "Session" && Number(purchase.session_id) === 2)
-                    ? (purchase.pack_size === 5 || purchase.pack_size === 10)
-                    : (purchase.pack_size === 7 || purchase.pack_size === 14)
-                );
+              {purchases.length === 0 ? (
+                <tr>
+                  <td colSpan="14" className="text-center py-5" style={{ color: "#888", fontSize: "15px" }}>
+                    No purchases found.
+                  </td>
+                </tr>
+              ) : (
+                purchases.map((purchase, index) => {
+                  const isSession = purchase.type === "Session";
+                  const hasSchedule = isSession
+                    ? (purchase.session_schedule?.length > 0 || purchase.scheduled_days_detailed?.length > 0 || purchase.scheduled_date?.length > 0)
+                    : purchase.scheduled_date?.length > 0;
+                  const hasContacts = !!(purchase.gym_contact || purchase.owner_contact || purchase.client_contact || purchase.gym_area || purchase.owner_name);
+                  const isExpandable = hasSchedule || hasContacts;
+                  const isExpanded = expandedRows.has(purchase.id);
+                  const isWeeklyPass = purchase.pack_size && (
+                    (purchase.type === "Session" && Number(purchase.session_id) === 2)
+                      ? (purchase.pack_size === 5 || purchase.pack_size === 10)
+                      : (purchase.pack_size === 7 || purchase.pack_size === 14)
+                  );
 
-                const nextPurchase = purchases[index + 1];
-                const isDayChanged = nextPurchase && isDifferentDay(purchase.purchased_at, nextPurchase.purchased_at);
+                  const nextPurchase = purchases[index + 1];
+                  const isDayChanged = nextPurchase && isDifferentDay(purchase.purchased_at, nextPurchase.purchased_at);
 
-                const typeLabel = purchase.type === "Session" 
-                  ? (Number(purchase.session_id) === 2
-                    ? (purchase.pack_size === 5 ? "5 Day PT" : purchase.pack_size === 10 ? "10 Day PT" : (purchase.session_name ? `FC (${purchase.session_name})` : "FC"))
-                    : (purchase.pack_size === 7 ? `7 Session (${purchase.session_name})` : purchase.pack_size === 14 ? `14 Session (${purchase.session_name})` : (purchase.session_name ? `FC (${purchase.session_name})` : "FC")))
-                  : (purchase.type === "Daily Pass" 
-                    ? (purchase.pack_size === 7 ? "7 Day Pack" : purchase.pack_size === 14 ? "14 Day Pack" : (purchase.head_count > 1 
-                       ? `Group Pass (${purchase.head_count})` 
-                       : (parseInt(purchase.days_total) > 1 
-                         ? "Multi DayPass" 
-                         : "Daily Pass")))
-                    : purchase.type);
+                  const typeLabel = purchase.type === "Session"
+                    ? (Number(purchase.session_id) === 2
+                      ? (purchase.pack_size === 5 ? "5 Day PT" : purchase.pack_size === 10 ? "10 Day PT" : (purchase.session_name ? `FC (${purchase.session_name})` : "FC"))
+                      : (purchase.pack_size === 7 ? `7 Session (${purchase.session_name})` : purchase.pack_size === 14 ? `14 Session (${purchase.session_name})` : (purchase.session_name ? `FC (${purchase.session_name})` : "FC")))
+                    : (purchase.type === "Daily Pass"
+                      ? (purchase.pack_size === 7 ? "7 Day Pack" : purchase.pack_size === 14 ? "14 Day Pack" : (purchase.head_count > 1
+                        ? `Group Pass (${purchase.head_count})`
+                        : (parseInt(purchase.days_total) > 1
+                          ? "Multi DayPass"
+                          : "Daily Pass")))
+                      : purchase.type);
 
-                return (
-                  <React.Fragment key={purchase.id}>
-                    <tr>
-                      <td style={{ padding: "8px !important" }}>
-                        {isExpandable && (
-                          <button
-                            onClick={() => toggleRow(purchase.id)}
-                            style={{
-                              background: "transparent",
-                              border: "none",
-                              color: "#FF5757",
-                              cursor: "pointer",
-                              padding: "4px 8px",
-                              fontSize: "16px",
-                              transition: "transform 0.2s",
-                              transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-                            }}
-                          >
-                            ▶
-                          </button>
-                        )}
-                      </td>
-                      <td className="client-name">
-                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          {getClientDistinctStatus(purchase.client_name) && (
-                            <span
+                  return (
+                    <React.Fragment key={purchase.id}>
+                      <tr>
+                        <td style={{ padding: "8px !important" }}>
+                          {isExpandable && (
+                            <button
+                              onClick={() => toggleRow(purchase.id)}
                               style={{
-                                width: "8px",
-                                height: "8px",
-                                borderRadius: "50%",
-                                backgroundColor: "#28a745",
-                                display: "inline-block",
-                                flexShrink: 0,
-                              }}
-                              title="Distinct: Single booking type"
-                            />
-                          )}
-                          {purchase.client_name || "N/A"}
-                        </span>
-                      </td>
-                      <td className="client-contact">{purchase.client_contact || "N/A"}</td>
-                      <td className="gym-name">
-                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                          {getGymDistinctStatus(purchase.gym_name) && (
-                            <span
-                              style={{
-                                width: "8px",
-                                height: "8px",
-                                borderRadius: "50%",
-                                backgroundColor: "#28a745",
-                                display: "inline-block",
-                                flexShrink: 0,
-                              }}
-                              title="Distinct: Single booking type"
-                            />
-                          )}
-                          {purchase.gym_name || "N/A"}
-                        </span>
-                      </td>
-                      <td className="city">{purchase.gym_city || "N/A"}</td>
-                      <td className="area">{purchase.gym_area || "N/A"}</td>
-                      <td className="type">
-                        {isWeeklyPass ? (
-                          purchase.type === 'Daily Pass' ? (
-                          <span className={`inactive-pack-btn pack-btn-Daily`}>
-                            {typeLabel}
-                          </span>) : (
-                            <span className={`inactive-pack-btn pack-btn-Session`}>
-                              {typeLabel}
-                            </span>
-                          )
-                        ) : (
-                          <span>{typeLabel}</span>
-                        )}
-                      </td>
-                      <td className="days-total">{purchase.pack_size > 1 ? (`${purchase.days_used || 0} / ${purchase.pack_size} `): (getDisplayValue(purchase))}</td>
-                      <td className="amount">{formatAmount(purchase.amount)}</td>
-                      <td className="purchased-at">{formatDate(purchase.purchased_at)}</td>
-                      <td className="scanned-date">
-                        {getLatestScannedDate(purchase) ? (
-                          formatDate(getLatestScannedDate(purchase))
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className="status">
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-                          {purchase.status ? (
-                            <span
-                              style={{
-                                padding: "3px 10px",
-                                borderRadius: "4px",
-                                fontSize: "12px",
-                                fontWeight: "600",
-                                textTransform: "uppercase",
-                                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                color: getStatusColor(purchase.status),
-                                display: "inline-block",
-                                minWidth: "120px",
-                                padding: "4px 12px",
-                                textAlign: "center",
+                                background: "transparent",
+                                border: "none",
+                                color: "#FF5757",
+                                cursor: "pointer",
+                                padding: "4px 8px",
+                                fontSize: "16px",
+                                transition: "transform 0.2s",
+                                transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
                               }}
                             >
-                              {getStatusDisplayText(purchase.status)}
-                            </span>
+                              ▶
+                            </button>
+                          )}
+                        </td>
+                        <td className="client-name">
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            {getClientDistinctStatus(purchase.client_name) && (
+                              <span
+                                style={{
+                                  width: "8px",
+                                  height: "8px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "#28a745",
+                                  display: "inline-block",
+                                  flexShrink: 0,
+                                }}
+                                title="Distinct: Single booking type"
+                              />
+                            )}
+                            {purchase.client_name || "N/A"}
+                          </span>
+                        </td>
+                        <td className="client-contact">{purchase.client_contact || "N/A"}</td>
+                        <td className="gym-name">
+                          <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            {getGymDistinctStatus(purchase.gym_name) && (
+                              <span
+                                style={{
+                                  width: "8px",
+                                  height: "8px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "#28a745",
+                                  display: "inline-block",
+                                  flexShrink: 0,
+                                }}
+                                title="Distinct: Single booking type"
+                              />
+                            )}
+                            {formatGymName(purchase.gym_name) || "N/A"}
+                          </span>
+                        </td>
+                        <td className="city">{purchase.gym_city || "N/A"}</td>
+                        <td className="area">{purchase.gym_area || "N/A"}</td>
+                        <td className="type">
+                          {isWeeklyPass ? (
+                            purchase.type === 'Daily Pass' ? (
+                              <span className={`inactive-pack-btn pack-btn-Daily`}>
+                                {typeLabel}
+                              </span>) : (
+                              <span className={`inactive-pack-btn pack-btn-Session`}>
+                                {typeLabel}
+                              </span>
+                            )
                           ) : (
-                            <span style={{ color: "#666", fontSize: "12px" }}>N/A</span>
+                            <span>{typeLabel}</span>
                           )}
-                          {purchase.scheduled_days_detailed && purchase.scheduled_days_detailed.length > 0 && (
-                            <span style={{ fontSize: "11px", color: "#888", fontWeight: "600", marginTop: "2px" }}>
-                              {purchase.scheduled_days_detailed.filter(d => d.checkin_at).length} / {purchase.scheduled_days_detailed.length}
-                            </span>
+                        </td>
+                        <td className="days-total">{purchase.pack_size > 1 ? (`${purchase.days_used || 0} / ${purchase.pack_size} `) : (getDisplayValue(purchase))}</td>
+                        <td className="amount">{formatAmount(purchase.amount)}</td>
+                        <td className="purchased-at">{formatDate(purchase.purchased_at)}</td>
+                        <td className="scanned-date">
+                          {getLatestScannedDate(purchase) ? (
+                            formatDate(getLatestScannedDate(purchase))
+                          ) : (
+                            "-"
                           )}
-                        </div>
-                      </td> 
-                      <td className="pricing-slab">
-                        {typeof purchase.pricing_slab === "object" && purchase.pricing_slab !== null && ((purchase.owner_amount || purchase.discount_price)/(purchase.head_count * purchase.days_total) <= purchase.pricing_slab.owner_gets) ? (
-                          <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "11px", textAlign: "left" }}>
-                            {purchase.pricing_slab.actual_price !== undefined && purchase.pricing_slab.actual_price !== null && (
-                              <div>
-                                <span style={{ color: "#888" }}>Actual: </span>
-                                <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.actual_price}</span>
-                              </div>
+                        </td>
+                        <td className="status">
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+                            {purchase.status ? (
+                              <span
+                                style={{
+                                  padding: "3px 10px",
+                                  borderRadius: "4px",
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  textTransform: "uppercase",
+                                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                  color: getStatusColor(purchase.status),
+                                  display: "inline-block",
+                                  minWidth: "120px",
+                                  padding: "4px 12px",
+                                  textAlign: "center",
+                                }}
+                              >
+                                {getStatusDisplayText(purchase.status)}
+                              </span>
+                            ) : (
+                              <span style={{ color: "#666", fontSize: "12px" }}>N/A</span>
                             )}
-                            {purchase.pricing_slab.owner_gets !== undefined && purchase.pricing_slab.owner_gets !== null && (
-                              <div>
-                                <span style={{ color: "#888" }}>Owner: </span>
-                                <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.owner_gets}</span>
-                              </div>
-                            )}
-                            {purchase.pricing_slab.owner_monthly_equity !== undefined && purchase.pricing_slab.owner_monthly_equity !== null && (
-                              <div>
-                                <span style={{ color: "#888" }}>Equity: </span>
-                                <span style={{ color: "#fff" }}>
-                                  ₹{purchase.pricing_slab.owner_monthly_equity}
-                                  {purchase.pricing_slab.percent !== undefined && purchase.pricing_slab.percent !== null && (
-                                    <span
-                                      style={{
-                                        marginLeft: "2px",
-                                        color: purchase.pricing_slab.percent > 0 
-                                          ? "#4ade80" 
-                                          : purchase.pricing_slab.percent < 0 
-                                            ? "#ef4444" 
-                                            : "#888",
-                                      }}
-                                    >
-                                      
-                                      <span style={{ fontWeight: "600", fontSize: "10px" }}>
-                                        {purchase.pricing_slab.percent > 0 ? "↑" : purchase.pricing_slab.percent < 0 ? "↓" : ""}
-                                      </span>
-                                      <span style={{ fontSize: "10px", fontWeight: "600", marginLeft: "1px" }}>
-                                        {Math.abs(purchase.pricing_slab.percent)}%
-                                      </span>
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
+                            {purchase.scheduled_days_detailed && purchase.scheduled_days_detailed.length > 0 && (
+                              <span style={{ fontSize: "11px", color: "#888", fontWeight: "600", marginTop: "2px" }}>
+                                {purchase.scheduled_days_detailed.filter(d => d.checkin_at).length} / {purchase.scheduled_days_detailed.length}
+                              </span>
                             )}
                           </div>
-                        ) : (
-                          typeof purchase.pricing_slab === "object" ? "-" : (purchase.pricing_slab || "-")
-                        )}
-                      </td>
-                      <td className="platform">
-                        <span
-                          style={{
-                            color: purchase.platform === "android" ? "#a8d5a2" : purchase.platform === "ios" ? "#a2c4d5" : "#888",
-                            backgroundColor: purchase.platform === "android" ? "rgba(100, 200, 80, 0.1)" : purchase.platform === "ios" ? "rgba(80, 150, 200, 0.1)" : "rgba(128,128,128,0.1)",
-                            border: `1px solid ${purchase.platform === "android" ? "#4caf50" : purchase.platform === "ios" ? "#5097c8" : "#555"}`,
-                            borderRadius: "6px",
-                            padding: "4px 10px",
-                            fontSize: "12px",
-                            fontWeight: 500,
-                            textTransform: "capitalize",
-                            display: "inline-block"
-                          }}
-                        >
-                          {purchase.platform || "N/A"}
-                        </span>
-                      </td>
-                    </tr>
-                    {isExpanded && (
-                      <tr className="schedule-row">
-                        <td colSpan="13" style={{ padding: "0 !important" }}>
-                          <div
-                            style={{
-                              backgroundColor: "#151515",
-                              padding: "16px",
-
-                              borderBottom: "1px solid #333",
-                            }}
-                          >
-                            {hasSchedule && (
-                              <>
-                                <p
-                                  style={{
-                                    fontSize: "14px",
-                                    fontWeight: "600",
-                                    color: "#FF5757",
-                                    marginBottom: "12px",
-                                  }}
-                                >
-                                  {isSession ? "Class Schedule" : "Scheduled Dates"}
-                                </p>
-                                {isSession && purchase.session_name && (
-                                  <div style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-                                    Fitness Classes: <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.session_name}</span>
-                                  </div>
-                                )}
-                                {!isSession && purchase.head_count && (
-                                  <div style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
-                                    Headcount: <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.head_count}</span>
-                                  </div>
-                                )}
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
-                                  {purchase.scheduled_days_detailed && purchase.scheduled_days_detailed.length > 0
-                                    ? purchase.scheduled_days_detailed.map((day, idx) => (
-                                      <div
-                                        key={`${purchase.id}-day-detail-${idx}`}
+                        </td>
+                        <td className="pricing-slab">
+                          {typeof purchase.pricing_slab === "object" && purchase.pricing_slab !== null && ((purchase.owner_amount || purchase.discount_price) / (purchase.head_count * purchase.days_total) <= purchase.pricing_slab.owner_gets) ? (
+                            <div style={{ display: "flex", flexDirection: "column", gap: "2px", fontSize: "11px", textAlign: "left" }}>
+                              {purchase.pricing_slab.actual_price !== undefined && purchase.pricing_slab.actual_price !== null && (
+                                <div>
+                                  <span style={{ color: "#888" }}>Actual: </span>
+                                  <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.actual_price}</span>
+                                </div>
+                              )}
+                              {purchase.pricing_slab.owner_gets !== undefined && purchase.pricing_slab.owner_gets !== null && (
+                                <div>
+                                  <span style={{ color: "#888" }}>Owner: </span>
+                                  <span style={{ color: "#fff" }}>₹{purchase.pricing_slab.owner_gets}</span>
+                                </div>
+                              )}
+                              {purchase.pricing_slab.owner_monthly_equity !== undefined && purchase.pricing_slab.owner_monthly_equity !== null && (
+                                <div>
+                                  <span style={{ color: "#888" }}>Equity: </span>
+                                  <span style={{ color: "#fff" }}>
+                                    ₹{purchase.pricing_slab.owner_monthly_equity}
+                                    {purchase.pricing_slab.percent !== undefined && purchase.pricing_slab.percent !== null && (
+                                      <span
                                         style={{
-                                          backgroundColor: "#222",
-                                          border: "1px solid #333",
-                                          borderRadius: "8px",
-                                          padding: "12px 16px",
-                                          fontSize: "13px",
-                                          minWidth: "220px",
-                                          display: "flex",
-                                          flexDirection: "column",
-                                          gap: "6px",
-                                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                                          marginLeft: "2px",
+                                          color: purchase.pricing_slab.percent > 0
+                                            ? "#4ade80"
+                                            : purchase.pricing_slab.percent < 0
+                                              ? "#ef4444"
+                                              : "#888",
                                         }}
                                       >
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
-                                          <span style={{ color: "#fff", fontWeight: "600" }}>
-                                            Day {idx + 1}: {formatScheduleDate(day.date)}
-                                          </span>
-                                          <span
+
+                                        <span style={{ fontWeight: "600", fontSize: "10px" }}>
+                                          {purchase.pricing_slab.percent > 0 ? "↑" : purchase.pricing_slab.percent < 0 ? "↓" : ""}
+                                        </span>
+                                        <span style={{ fontSize: "10px", fontWeight: "600", marginLeft: "1px" }}>
+                                          {Math.abs(purchase.pricing_slab.percent)}%
+                                        </span>
+                                      </span>
+                                    )}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            typeof purchase.pricing_slab === "object" ? "-" : (purchase.pricing_slab || "-")
+                          )}
+                        </td>
+                        <td className="platform">
+                          <span
+                            style={{
+                              color: purchase.platform === "android" ? "#a8d5a2" : purchase.platform === "ios" ? "#a2c4d5" : "#888",
+                              backgroundColor: purchase.platform === "android" ? "rgba(100, 200, 80, 0.1)" : purchase.platform === "ios" ? "rgba(80, 150, 200, 0.1)" : "rgba(128,128,128,0.1)",
+                              border: `1px solid ${purchase.platform === "android" ? "#4caf50" : purchase.platform === "ios" ? "#5097c8" : "#555"}`,
+                              borderRadius: "6px",
+                              padding: "4px 10px",
+                              fontSize: "12px",
+                              fontWeight: 500,
+                              textTransform: "capitalize",
+                              display: "inline-block"
+                            }}
+                          >
+                            {purchase.platform || "N/A"}
+                          </span>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr className="schedule-row">
+                          <td colSpan="13" style={{ padding: "0 !important" }}>
+                            <div
+                              style={{
+                                backgroundColor: "#151515",
+                                padding: "16px",
+
+                                borderBottom: "1px solid #333",
+                              }}
+                            >
+                              {hasSchedule && (
+                                <>
+                                  <p
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "600",
+                                      color: "#FF5757",
+                                      marginBottom: "12px",
+                                    }}
+                                  >
+                                    {isSession ? "Class Schedule" : "Scheduled Dates"}
+                                  </p>
+                                  {isSession && purchase.session_name && (
+                                    <div style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
+                                      Fitness Classes: <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.session_name}</span>
+                                    </div>
+                                  )}
+                                  {!isSession && purchase.head_count && (
+                                    <div style={{ fontSize: "13px", color: "#888", marginBottom: "12px" }}>
+                                      Headcount: <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.head_count}</span>
+                                    </div>
+                                  )}
+                                  <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "16px" }}>
+                                    {purchase.scheduled_days_detailed && purchase.scheduled_days_detailed.length > 0
+                                      ? purchase.scheduled_days_detailed.map((day, idx) => (
+                                        <div
+                                          key={`${purchase.id}-day-detail-${idx}`}
+                                          style={{
+                                            backgroundColor: "#222",
+                                            border: "1px solid #333",
+                                            borderRadius: "8px",
+                                            padding: "12px 16px",
+                                            fontSize: "13px",
+                                            minWidth: "220px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "6px",
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                                          }}
+                                        >
+                                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+                                            <span style={{ color: "#fff", fontWeight: "600" }}>
+                                              Day {idx + 1}: {formatScheduleDate(day.date)}
+                                            </span>
+                                            <span
+                                              style={{
+                                                fontSize: "11px",
+                                                fontWeight: "600",
+                                                padding: "2px 8px",
+                                                borderRadius: "4px",
+                                                backgroundColor: "rgba(255,255,255,0.06)",
+                                                color: getStatusColor(day.status)
+                                              }}
+                                            >
+                                              {getStatusDisplayText(day.status)}
+                                            </span>
+                                          </div>
+                                          {day.status === "attended" && day.checkin_at && (
+                                            <div style={{ fontSize: "11px", color: "#888", borderTop: "1px solid #333", paddingTop: "6px", marginTop: "4px" }}>
+                                              <span style={{ color: "#4ade80", fontWeight: "600" }}>Scanned At: </span>
+                                              <span style={{ color: "#ccc" }}>{formatDate(day.checkin_at)}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))
+                                      : (isSession
+                                        ? purchase.session_schedule.map((schedule, idx) => (
+                                          <div
+                                            key={`${purchase.id}-schedule-${idx}`}
                                             style={{
-                                              fontSize: "11px",
-                                              fontWeight: "600",
-                                              padding: "2px 8px",
-                                              borderRadius: "4px",
-                                              backgroundColor: "rgba(255,255,255,0.06)",
-                                              color: getStatusColor(day.status)
+                                              backgroundColor: "#1a1a1a",
+                                              border: "1px solid #333",
+                                              borderRadius: "6px",
+                                              padding: "10px 14px",
+                                              fontSize: "13px",
                                             }}
                                           >
-                                            {getStatusDisplayText(day.status)}
-                                          </span>
-                                        </div>
-                                        {day.status === "attended" && day.checkin_at && (
-                                          <div style={{ fontSize: "11px", color: "#888", borderTop: "1px solid #333", paddingTop: "6px", marginTop: "4px" }}>
-                                            <span style={{ color: "#4ade80", fontWeight: "600" }}>Scanned At: </span>
-                                            <span style={{ color: "#ccc" }}>{formatDate(day.checkin_at)}</span>
+                                            <div style={{ color: "#fff", fontWeight: "500" }}>
+                                              {formatScheduleDate(schedule.date)}
+                                            </div>
+                                            <div style={{ color: "#888", fontSize: "12px", marginTop: "4px" }}>
+                                              {schedule.start_time}
+                                            </div>
                                           </div>
-                                        )}
-                                      </div>
-                                    ))
-                                    : (isSession
-                                      ? purchase.session_schedule.map((schedule, idx) => (
-                                        <div
-                                          key={`${purchase.id}-schedule-${idx}`}
-                                          style={{
-                                            backgroundColor: "#1a1a1a",
-                                            border: "1px solid #333",
-                                            borderRadius: "6px",
-                                            padding: "10px 14px",
-                                            fontSize: "13px",
-                                          }}
-                                        >
-                                          <div style={{ color: "#fff", fontWeight: "500" }}>
-                                            {formatScheduleDate(schedule.date)}
+                                        ))
+                                        : purchase.scheduled_date.map((date, idx) => (
+                                          <div
+                                            key={`${purchase.id}-date-${idx}`}
+                                            style={{
+                                              backgroundColor: "#1a1a1a",
+                                              border: "1px solid #333",
+                                              borderRadius: "6px",
+                                              padding: "10px 14px",
+                                              fontSize: "13px",
+                                              color: "#fff",
+                                              fontWeight: "500",
+                                            }}
+                                          >
+                                            {formatScheduleDate(date)}
                                           </div>
-                                          <div style={{ color: "#888", fontSize: "12px", marginTop: "4px" }}>
-                                            {schedule.start_time}
-                                          </div>
-                                        </div>
-                                      ))
-                                      : purchase.scheduled_date.map((date, idx) => (
-                                        <div
-                                          key={`${purchase.id}-date-${idx}`}
-                                          style={{
-                                            backgroundColor: "#1a1a1a",
-                                            border: "1px solid #333",
-                                            borderRadius: "6px",
-                                            padding: "10px 14px",
-                                            fontSize: "13px",
-                                            color: "#fff",
-                                            fontWeight: "500",
-                                          }}
-                                        >
-                                          {formatScheduleDate(date)}
-                                        </div>
-                                      ))
-                                    )
-                                  }
+                                        ))
+                                      )
+                                    }
+                                  </div>
+                                </>
+                              )}
+                              {(purchase.gym_contact || purchase.owner_contact || purchase.client_contact || purchase.gym_area || purchase.owner_name) && (
+                                <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
+                                  {purchase.pack_size > 1 && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Valid Until: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{formatDate(purchase.valid_until)}</span>
+                                    </div>
+                                  )}
+                                  {purchase.owner_name && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Owner Name: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.owner_name}</span>
+                                    </div>
+                                  )}
+                                  {purchase.gym_contact && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Gym Contact: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_contact}</span>
+                                    </div>
+                                  )}
+                                  {purchase.owner_contact && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Owner Contact: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.owner_contact}</span>
+                                    </div>
+                                  )}
+                                  {purchase.gym_area && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Gym Area: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_area}</span>
+                                    </div>
+                                  )}
+                                  {purchase.gym_city && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>City: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_city}</span>
+                                    </div>
+                                  )}
+                                  {purchase.discount_price !== undefined && purchase.discount_price !== null && (
+                                    <div style={{ fontSize: "13px" }}>
+                                      <span style={{ color: "#888" }}>Gym Price: </span>
+                                      <span style={{ color: "#fff", fontWeight: "500" }}>₹{purchase.owner_amount ? purchase.owner_amount : purchase.discount_price}</span>
+                                    </div>
+                                  )}
                                 </div>
-                              </>
-                            )}
-                            {(purchase.gym_contact || purchase.owner_contact || purchase.client_contact || purchase.gym_area || purchase.owner_name) && (
-                              <div style={{ display: "flex", gap: "24px", flexWrap: "wrap" }}>
-                                {purchase.pack_size > 1 && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Valid Until: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{formatDate(purchase.valid_until)}</span>
-                                  </div>
-                                )}
-                                {purchase.owner_name && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Owner Name: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.owner_name}</span>
-                                  </div>
-                                )}
-                                {purchase.gym_contact && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Gym Contact: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_contact}</span>
-                                  </div>
-                                )}
-                                {purchase.owner_contact && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Owner Contact: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.owner_contact}</span>
-                                  </div>
-                                )}
-                                {purchase.gym_area && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Gym Area: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_area}</span>
-                                  </div>
-                                )}
-                                {purchase.gym_city && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>City: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>{purchase.gym_city}</span>
-                                  </div>
-                                )}
-                                {purchase.discount_price !== undefined && purchase.discount_price !== null && (
-                                  <div style={{ fontSize: "13px" }}>
-                                    <span style={{ color: "#888" }}>Gym Price: </span>
-                                    <span style={{ color: "#fff", fontWeight: "500" }}>₹{purchase.owner_amount ? purchase.owner_amount : purchase.discount_price}</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                    {isDayChanged && (
-                      <tr>
-                        <td colSpan="14" style={{ padding: "0" }}>
-                          <div
-                            style={{
-                              borderTop: "2px dashed #FF5757",
-                              margin: "1px 1px",
-                              opacity: 0.5,
-                            }}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      {isDayChanged && (
+                        <tr>
+                          <td colSpan="14" style={{ padding: "0" }}>
+                            <div
+                              style={{
+                                borderTop: "2px dashed #FF5757",
+                                margin: "1px 1px",
+                                opacity: 0.5,
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                }))}
             </tbody>
           </table>
         </div>
@@ -1234,7 +1359,7 @@ export default function AllPurchases() {
       {!loading && purchases.length > 0 && (
         <div className="d-flex justify-content-between align-items-center mt-4">
           <div style={{ color: "#888", fontSize: "14px" }}>
-            Showing {((page - 1) * pagination.limit) + 1} to{" "}
+            Showing {pagination.total === 0 ? 0 : ((page - 1) * pagination.limit) + 1} to{" "}
             {Math.min(page * pagination.limit, pagination.total)} of {pagination.total} purchases
           </div>
           <div className="d-flex align-items-center gap-2">
@@ -1255,7 +1380,7 @@ export default function AllPurchases() {
             >
               Previous
             </button>
-            
+
             {getPageNumbers().map((p, idx) => {
               if (p === "...") {
                 return (
@@ -1436,6 +1561,7 @@ export default function AllPurchases() {
 
         table.purchases-table .gym-name {
           color: #ccc !important;
+          text-transform: capitalize;
         }
 
         table.purchases-table .type {

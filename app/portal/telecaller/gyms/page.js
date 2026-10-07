@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
+import { formatGymName } from "@/lib/utils";
 import {
   FaSearch,
   FaFilter,
@@ -592,7 +593,7 @@ export default function GymStats() {
                   return (
                     <tr key={gym.id}>
                       <td>
-                        <div className="user-name">{gym.gymName}</div>
+                        <div className="user-name">{formatGymName(gym.gymName)}</div>
                       </td>
                       <td>{gym.ownerName}</td>
                       <td>{gym.mobile}</td>

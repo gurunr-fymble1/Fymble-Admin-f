@@ -1827,3 +1827,12 @@ a {
   border-color: #10b981 !important;
   color: #ffffff !important;
 }
+
+/* Gym Name Capitalization: Capitalize 1st letter of each word */
+.gym-name,
+table .gym-name,
+td.gym-name,
+div.gym-name,
+span.gym-name {
+  text-transform: capitalize;
+}

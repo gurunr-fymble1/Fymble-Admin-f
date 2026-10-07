@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FaArrowLeft, FaTimes } from "react-icons/fa";
 import axiosInstance from "@/lib/axios";
 import { Modal } from "react-bootstrap";
+import { formatGymName } from "@/lib/utils";
 
 const GymDetails = () => {
   const router = useRouter();
@@ -130,7 +131,7 @@ const GymDetails = () => {
             <FaArrowLeft style={{ color: "#FF5757" }} />
           </button>
           <h2 className="users-title">
-            {gymName ? `${gymName} - ` : ""}<span style={{ color: "#FF5757" }}>Plans</span>
+            {gymName ? `${formatGymName(gymName)} - ` : ""}<span style={{ color: "#FF5757" }}>Plans</span>
           </h2>
         </div>
       </div>

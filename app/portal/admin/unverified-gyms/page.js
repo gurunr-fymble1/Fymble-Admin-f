@@ -10,6 +10,7 @@ import {
   FaChevronRight,
   FaInfoCircle,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function UnverifiedGyms() {
   const router = useRouter();
@@ -538,7 +539,7 @@ export default function UnverifiedGyms() {
                       }}
                     >
                       <td style={{ position: 'relative' }}>
-                        <div className="user-name">{gym.gym_name || "-"}</div>
+                        <div className="user-name">{formatGymName(gym.gym_name) || "-"}</div>
                         {(gym.address && gym.address !== '-' && gym.address !== 'N/A') ||
                          (gym.street_address && gym.street_address !== '-') ||
                          (gym.area && gym.area !== '-') ||

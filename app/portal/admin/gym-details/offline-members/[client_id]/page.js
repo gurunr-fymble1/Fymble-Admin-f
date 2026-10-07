@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { FaInfoCircle } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function OfflineMemberDetail() {
   const params = useParams();
@@ -267,7 +268,7 @@ export default function OfflineMemberDetail() {
           <div className="client-detail-info-grid">
             <div className="client-detail-info-item">
               <label className="client-detail-label">Gym Name</label>
-              <span className="client-detail-value">{clientData.gym_name || "-"}</span>
+              <span className="client-detail-value">{formatGymName(clientData.gym_name) || "-"}</span>
             </div>
             <div className="client-detail-info-item">
               <label className="client-detail-label">Gym Location</label>

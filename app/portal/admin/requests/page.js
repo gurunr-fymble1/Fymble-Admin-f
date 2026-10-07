@@ -9,6 +9,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function BDMRequests() {
   // Dummy data for BDM requests
@@ -382,7 +383,7 @@ export default function BDMRequests() {
                         <div className="detail-row">
                           <span className="detail-label">Gym Name:</span>
                           <span className="detail-value">
-                            {request.requestedGymName}
+                            {formatGymName(request.requestedGymName)}
                           </span>
                         </div>
                         <div className="detail-row">

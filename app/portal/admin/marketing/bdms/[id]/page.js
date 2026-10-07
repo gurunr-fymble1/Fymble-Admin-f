@@ -8,6 +8,7 @@ import {
   FaCopy,
   FaBuilding,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function BDMTracker() {
   const router = useRouter();
@@ -446,7 +447,7 @@ export default function BDMTracker() {
                   <div style={{ padding: "1.25rem" }}>
                     {/* Gym Name */}
                     <h3 style={{ color: "white", fontSize: "16px", fontWeight: "600", marginBottom: "0.75rem" }}>
-                      {visit.gym_name || "New Visit"}
+                      {formatGymName(visit.gym_name) || "New Visit"}
                     </h3>
 
                     {/* Address */}

@@ -163,7 +163,7 @@ export default function ClientPurchaseCountPage() {
               }}
             />
           </div>
-          {(role === "admin" || role === "support") && (
+          {(role === "admin" || role === "support" || role === "accountant") && (
             <button
               onClick={handleExport}
               disabled={exporting || loading}

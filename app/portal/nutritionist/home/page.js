@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronUp, FaEdit, FaClock } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from "@/lib/axios";
+import { formatGymName } from "@/lib/utils";
 
 // Helper function to convert date to IST format (YYYY-MM-DD)
 // Since the database stores dates in IST, we need to format them correctly
@@ -2280,7 +2281,7 @@ export default function Home() {
                                 {member.client_contact}
                               </td>
                               <td style={{ padding: "12px 8px", fontSize: "13px", color: "#6b7280" }}>
-                                {member.gym_name}
+                                {formatGymName(member.gym_name)}
                               </td>
                               <td style={{ padding: "12px 8px", fontSize: "13px", color: "#111827", fontWeight: "500" }}>
                                 ₹{member.amount?.toLocaleString()}
@@ -2442,7 +2443,7 @@ export default function Home() {
                     </div>
                     <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>
                       {selectedMember.client_contact}
-                      {memberType === "membership" && selectedMember.gym_name && ` • ${selectedMember.gym_name}`}
+                      {memberType === "membership" && selectedMember.gym_name && ` • ${formatGymName(selectedMember.gym_name)}`}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>

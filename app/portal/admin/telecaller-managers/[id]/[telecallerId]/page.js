@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { FaPhone, FaBuilding, FaChevronLeft, FaChevronRight, FaInfoCircle } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 const TABS = [
   { key: "pending", label: "Pending" },
@@ -708,7 +709,7 @@ export default function TelecallerDetails() {
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                         >
                           <td style={{ padding: "16px", color: "#fff", fontWeight: "500", maxWidth: "250px", wordBreak: "break-word" }}>
-                            {gymDetails.gym_name || "N/A"}
+                            {formatGymName(gymDetails.gym_name) || "N/A"}
                           </td>
                           <td style={{ padding: "16px", color: "#ccc" }}>
                             <div style={{
@@ -914,7 +915,7 @@ export default function TelecallerDetails() {
                   color: "#888",
                   margin: "4px 0 0 0"
                 }}>
-                  {selectedGymName || "Gym"}
+                  {formatGymName(selectedGymName) || "Gym"}
                 </p>
               </div>
               <button

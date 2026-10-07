@@ -12,6 +12,7 @@ import {
   FaInfoCircle,
 } from "react-icons/fa";
 import { useRole } from "../../layout";
+import { formatGymName } from "@/lib/utils";
 
 export default function GymPhotos() {
   const router = useRouter();
@@ -325,7 +326,7 @@ export default function GymPhotos() {
                     }}
                   >
                     <td style={{ position: 'relative' }}>
-                      <div className="user-name">{gym.gym_name || "-"}</div>
+                      <div className="user-name">{formatGymName(gym.gym_name) || "-"}</div>
                       {gym.address && (
                         <FaInfoCircle
                           style={{

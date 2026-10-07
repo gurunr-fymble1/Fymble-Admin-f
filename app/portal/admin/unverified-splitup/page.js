@@ -11,6 +11,7 @@ import {
   FaCheckCircle,
   FaTimes,
 } from "react-icons/fa";
+import { formatGymName } from "@/lib/utils";
 
 export default function UnverifiedSplitup() {
   const router = useRouter();
@@ -636,7 +637,7 @@ export default function UnverifiedSplitup() {
                     }
                   >
                     <td style={{ padding: "16px", color: "#fff" }}>
-                      {gym.gym_name || "-"}
+                      {formatGymName(gym.gym_name) || "-"}
                     </td>
                     <td style={{ padding: "16px", color: "#ccc" }}>
                       {gym.city || gym.location || "-"}
@@ -969,7 +970,7 @@ export default function UnverifiedSplitup() {
                 }}
               >
                 <FaLayerGroup style={{ color: "#FF5757" }} />
-                Plans - {selectedGym.gym_name}
+                Plans - {formatGymName(selectedGym.gym_name)}
               </h3>
               <button
                 onClick={() => setShowPlansModal(false)}
@@ -1396,7 +1397,7 @@ export default function UnverifiedSplitup() {
                   margin: 0,
                 }}
               >
-                Status - {selectedGym.gym_name}
+                Status - {formatGymName(selectedGym.gym_name)}
               </h3>
               <button
                 onClick={() => setShowStatusModal(false)}

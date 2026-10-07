@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { formatGymName } from "@/lib/utils";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -621,7 +622,7 @@ export default function AdminClientTrackingDetail() {
                           {getPurchaseLabel(purchase.type)}
                         </p>
                         <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
-                          {purchase.gym_name}{purchase.gym_area ? ` - ${purchase.gym_area}` : ""}
+                          {formatGymName(purchase.gym_name)}{purchase.gym_area ? ` - ${purchase.gym_area}` : ""}
                         </p>
                       </div>
                     </div>
@@ -1016,7 +1017,7 @@ export default function AdminClientTrackingDetail() {
                       <FaBuilding style={{ fontSize: "1.25rem", color: "#9ca3af" }} />
                       <div>
                         <p style={{ fontSize: "0.875rem", fontWeight: "500", color: "white" }}>
-                          {gym.gym_name || `Gym ${gym.gym_id}`}{gym.gym_area ? ` - ${gym.gym_area}` : ""}
+                          {formatGymName(gym.gym_name) || `Gym ${gym.gym_id}`}{gym.gym_area ? ` - ${gym.gym_area}` : ""}
                         </p>
                         <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
                           Last visited: {formatDateTime(gym.last_viewed_at)}
@@ -1193,7 +1194,7 @@ export default function AdminClientTrackingDetail() {
                               whiteSpace: "nowrap",
                             }}
                           >
-                            {event.gym_name || `Gym ${event.gym_id}`}{event.gym_area ? ` - ${event.gym_area}` : ""}
+                            {formatGymName(event.gym_name) || `Gym ${event.gym_id}`}{event.gym_area ? ` - ${event.gym_area}` : ""}
                           </p>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.75rem", color: "#6b7280" }}>

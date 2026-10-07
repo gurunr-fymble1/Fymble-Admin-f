@@ -372,7 +372,7 @@ export default function ExpensesPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          {role === "admin" && (
+          {(role === "admin" || role === "accountant") && (
             <button
               onClick={() => {
                 setEditingExpense(null);
@@ -746,7 +746,7 @@ export default function ExpensesPage() {
           </button>
         </div>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          {role === "admin" && (
+          {(role === "admin" || role === "accountant") && (
             <button
               onClick={() => {
                 setEditingExpense(null);
@@ -803,7 +803,7 @@ export default function ExpensesPage() {
       </div>
 
       {/* Add/Edit Form */}
-      {role === "admin" && showAddForm && (
+      {(role === "admin" || role === "accountant") && showAddForm && (
         <div style={cardStyle}>
           <h3 style={{ color: "white", fontSize: "1.125rem", fontWeight: "600", margin: "0 0 1rem 0" }}>
             {editingExpense ? "Edit Expense" : "Add New Expense"}
@@ -1274,7 +1274,7 @@ export default function ExpensesPage() {
                     <th style={tableHeaderStyle}>Type</th>
                     <th style={tableHeaderStyle}>Description</th>
                     <th style={{ ...tableHeaderStyle, textAlign: "right" }}>Amount</th>
-                    {role === "admin" && <th style={tableHeaderStyle}>Actions</th>}
+                    {(role === "admin" || role === "accountant") && <th style={tableHeaderStyle}>Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -1302,7 +1302,7 @@ export default function ExpensesPage() {
                       <td style={{ ...tableCellStyle, textAlign: "right", fontWeight: "600" }}>
                         ₹{parseFloat(expense.amount).toFixed(2)}
                       </td>
-                      {role === "admin" && (
+                      {(role === "admin" || role === "accountant") && (
                         <td style={tableCellStyle}>
                           <div style={{ display: "flex", gap: "0.5rem" }}>
                             <button
